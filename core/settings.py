@@ -26,7 +26,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8001",
     "http://127.0.0.1:8080",
     "http://127.0.0.1:5173",
-    "http://07e3-2605-59c0-e61-9d10-11c7-1545-f17e-5b77.ngrok-free.app",
+    "http://raffle-system-0x.azurewebsites.net",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -63,7 +63,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8001",
     "http://127.0.0.1:8080",
     "http://127.0.0.1:5173",
-    "http://07e3-2605-59c0-e61-9d10-11c7-1545-f17e-5b77.ngrok-free.app",
+    "http://raffle-system-0x.azurewebsites.net",
 ]
 
 INSTALLED_APPS = [
