@@ -1,0 +1,731 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Organizer Dashboard | Raffle System{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8 px-4 mt-20">
+
+    <!-- HEADER -->
+    <div
+        class="max-w-5xl mx-auto bg-[#0F172A] border border-white/5 text-white rounded-[2rem] p-10 shadow-2xl overflow-hidden relative">
+        <!-- Glow -->
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#A2F625]/10 rounded-full blur-[80px]"></div>
+
+        <div class="relative z-10 flex flex-col items-center text-center">
+            <div
+                class="w-20 h-20 rounded-2xl bg-[#A2F625] flex items-center justify-center shadow-[0_0_30px_rgba(162,246,37,0.3)] mb-6 transform -rotate-6">
+                <span class="text-4xl text-black">💎</span>
+            </div>
+            <h1 class="text-4xl font-black italic uppercase tracking-tighter mb-2">Organizer Dashboard</h1>
+            <p class="text-gray-400 max-w-md pb-4">Launch raffles, manage entries, and draw winners with provable
+                fairness.</p>
+
+            {% if organizer_profile %}
+            <div class="flex flex-wrap justify-center gap-4 border-t border-white/5 pt-6 w-full max-w-2xl">
+                <div class="bg-white/5 px-6 py-2 rounded-xl border border-white/10">
+                    <p class="text-[8px] text-gray-500 uppercase font-black tracking-widest">Partner ID</p>
+                    <p class="text-sm font-black text-[#A2F625]">{{ organizer_profile.partner_id }}</p>
+                </div>
+                <div class="bg-white/5 px-6 py-2 rounded-xl border border-white/10">
+                    <p class="text-[8px] text-gray-500 uppercase font-black tracking-widest">Referral Code</p>
+                    <p class="text-sm font-black text-white">{{ organizer_profile.referral_code }}</p>
+                </div>
+                <a href="{% url 'accounts:profile_settings' %}"
+                    class="bg-white/5 hover:bg-white text-gray-400 hover:text-black px-6 py-2 rounded-xl border border-white/10 transition flex items-center justify-center gap-2 group">
+                    <svg class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="text-[8px] uppercase font-black tracking-widest">Settings</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="relative z-10 flex justify-center mt-10">
+            <button id="toggleRaffleFormBtn"
+                class="bg-[#A2F625] hover:bg-white text-black px-10 py-4 rounded-2xl font-black uppercase tracking-tighter text-lg shadow-xl transition transform hover:scale-105 active:scale-95">
+                + Create New Raffle
+            </button>
+        </div>
+    </div>
+
+    <!-- CREATE FORM (Collapsible) -->
+    <div id="createRaffleFormContainer"
+        class="max-w-4xl mx-auto overflow-hidden transition-all duration-500 ease-in-out max-h-0">
+        <div class="bg-[#0F172A] border border-white/10 p-8 rounded-[2rem] shadow-2xl mt-8">
+            <h2 class="text-2xl font-black text-white italic uppercase mb-6 flex items-center gap-3">
+                <span class="text-[#A2F625]">/</span> Setup Your Raffle
+            </h2>
+
+            <form method="post" enctype="multipart/form-data" class="space-y-8">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Basic Info -->
+                    <div class="lg:col-span-8 space-y-6">
+                        <div class="space-y-2">
+                            <label
+                                class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Raffle
+                                Title</label>
+                            {{ raffle_form.title }}
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Grand
+                                Prize Description</label>
+                            {{ raffle_form.description }}
+                        </div>
+                    </div>
+
+                    <!-- Side Stats -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <div class="space-y-2">
+                            <label
+                                class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Entry
+                                Price (₦)</label>
+                            {{ raffle_form.price }}
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">End
+                                Date & Time</label>
+                            {{ raffle_form.end_datetime }}
+                        </div>
+                    </div>
+
+                    <!-- Configuration -->
+                    <div class="lg:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-white/5">
+                        <div class="space-y-2">
+                            <label
+                                class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Target
+                                Participants</label>
+                            {{ raffle_form.target_participants }}
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Number
+                                of Winners</label>
+                            {{ raffle_form.num_winners }}
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Payout
+                                Percentage (%)</label>
+                            {{ raffle_form.payout_percentage }}
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-6 space-y-2">
+                        <label
+                            class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Campaign
+                            Cover Image</label>
+                        {{ raffle_form.image }}
+                    </div>
+
+                    <div class="lg:col-span-6 space-y-6">
+                        <div class="space-y-2">
+                            <label
+                                class="block text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Partnership
+                                Referral Code (Optional)</label>
+                            {{ raffle_form.partner_referral_code }}
+                            <p class="text-[9px] text-gray-600 italic">If this raffle was referred by another partner,
+                                enter their code here.</p>
+                        </div>
+                        <div class="flex items-center gap-4 pt-2">
+                            <div class="flex items-center h-5">
+                                {{ raffle_form.is_referral_enabled }}
+                            </div>
+                            <div class="text-sm">
+                                <label class="font-bold text-white uppercase text-[10px] tracking-widest">Enable Viral
+                                    Referrals</label>
+                                <p class="text-gray-500 text-[9px]">Gives participants +1 entry for successful
+                                    referrals.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-10 flex justify-center">
+                    <button type="submit"
+                        class="bg-[#A2F625] text-black font-black uppercase tracking-tighter px-16 py-5 rounded-[2rem] hover:bg-white transition-all transform active:scale-95 shadow-xl shadow-[#A2F625]/20 text-lg">
+                        LAUNCH CAMPAIGN →
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- STATS & WALLET -->
+    <div class="max-w-5xl mx-auto mt-12 grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Withdrawable Balance -->
+        <div
+            class="bg-gradient-to-br from-[#1E293B] to-[#0F172A] border border-white/5 p-6 rounded-[2rem] shadow-xl flex flex-col items-center text-center relative overflow-hidden group">
+            <div class="absolute inset-0 bg-[#A2F625]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <p class="text-gray-400 text-[8px] font-black uppercase tracking-widest mb-4">Withdrawable Balance</p>
+            <h2 class="text-3xl font-black text-[#A2F625] mb-6">₦{{ wallet.balance|floatformat:2 }}</h2>
+            <div class="flex gap-2 w-full">
+                <button onclick="document.getElementById('withdrawalModal').classList.remove('hidden')"
+                    class="flex-1 bg-white/5 hover:bg-white/10 text-white border border-white/10 px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest transition transform active:scale-95">
+                    Withdraw
+                </button>
+                <button onclick="toggleHistory()"
+                    class="bg-[#A2F625] text-black px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-widest transition transform active:scale-95">
+                    History
+                </button>
+            </div>
+        </div>
+
+        <!-- Payout Pool -->
+        <div
+            class="bg-[#0F172A] border border-white/5 p-6 rounded-[2rem] shadow-xl flex flex-col items-center text-center relative group">
+            <p class="text-gray-500 text-[8px] font-black uppercase tracking-widest mb-4">Winner Payout Pool</p>
+            <h2 class="text-3xl font-black text-white mb-6">₦{{ wallet.payout_pool_balance|floatformat:2 }}</h2>
+            <div class="text-[9px] text-gray-500 italic mt-auto">Reserved for prize claims</div>
+        </div>
+
+        <!-- Partnership Link -->
+        <a href="{% url 'raffle:partner_referral_dashboard' %}"
+            class="bg-[#0F172A] border border-blue-500/20 p-6 rounded-[2rem] shadow-xl flex flex-col items-center justify-center text-center hover:bg-blue-500/5 transition group">
+            <span class="text-2xl mb-2 group-hover:scale-110 transition">🔗</span>
+            <p class="text-blue-400 text-[10px] font-black uppercase tracking-widest">Partnership Earnings</p>
+            <p class="text-gray-500 text-[8px] mt-1">View referral breakdown</p>
+        </a>
+
+        <!-- Recent Activity (Compressed) -->
+        <div
+            class="lg:col-span-1 bg-[#0F172A] border border-white/5 p-6 rounded-[2rem] shadow-xl flex flex-col justify-center items-center text-center">
+            <canvas id="miniSalesChart" class="h-16 w-full opacity-50"></canvas>
+            <p class="text-[8px] text-gray-500 font-black uppercase mt-2">Active Tracker</p>
+        </div>
+    </div>
+
+    <!-- MAIN CHART -->
+    <div class="max-w-5xl mx-auto mt-8 bg-[#0F172A] border border-white/5 p-8 rounded-[2rem] shadow-xl">
+        <h3 class="text-xl font-black text-white italic uppercase mb-6 flex items-center justify-between">
+            Performance Tracker
+            <span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Volume (Last 7 Days)</span>
+        </h3>
+        <div class="h-64">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+
+    <!-- RECENT EARNINGS TABLE -->
+    <div class="max-w-5xl mx-auto mt-12 bg-[#0F172A] border border-white/5 p-8 rounded-[2rem] shadow-xl">
+        <h3 class="text-xl font-black text-white italic uppercase mb-6">Recent Earnings</h3>
+        <div class="overflow-hidden">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="text-gray-500 border-b border-white/5 text-[10px] uppercase font-black tracking-widest">
+                        <th class="pb-4">Raffle</th>
+                        <th class="pb-4">Ticket</th>
+                        <th class="pb-4">Net Earned</th>
+                        <th class="pb-4">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for ticket in paid_tickets %}
+                    <tr class="group hover:bg-white/[0.02] transition">
+                        <td class="py-4 font-bold text-white">{{ ticket.raffle.title|truncatechars:20 }}</td>
+                        <td class="py-4 text-gray-500 font-mono text-xs">{{ ticket.ticket_number }}</td>
+                        <td class="py-4 text-[#A2F625] font-black">₦{{ ticket.raffle.price|floatformat:2 }}</td>
+                        <td class="py-4 text-gray-600 text-[10px]">{{ ticket.purchased_at|date:"M d, H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="py-10 text-center text-gray-500 italic">No entries collected yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- RAFFLE LIST -->
+<div class="max-w-5xl mx-auto mt-20">
+    <h3 class="text-3xl font-black text-white italic uppercase mb-10">Your Campaigns</h3>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        {% for raffle in raffles %}
+        <div
+            class="bg-[#0F172A] border border-white/5 rounded-[2.5rem] p-8 shadow-xl flex flex-col justify-between group hover:border-[#A2F625]/30 transition-all duration-500">
+            <div>
+                <div class="flex justify-between items-start mb-6">
+                    <h4
+                        class="text-2xl font-black text-white uppercase italic leading-none group-hover:text-[#A2F625] transition">
+                        {{ raffle.title }}</h4>
+                    <div class="flex flex-wrap gap-2 justify-end">
+                        {% if raffle.paid_count == 0 %}
+                        <a href="{% url 'raffle:edit_raffle' raffle.custom_id %}"
+                            class="p-2 bg-white/5 hover:bg-blue-500/20 text-blue-400 rounded-lg transition"
+                            title="Edit Raffle">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+                            </svg>
+                        </a>
+                        {% endif %}
+
+                        {% if raffle.paid_count == 0 or raffle.status == 'ended' %}
+                        <form action="{% url 'raffle:delete_raffle' raffle.custom_id %}" method="POST"
+                            onsubmit="return confirm('Are you sure you want to delete this raffle? This cannot be undone.');"
+                            class="inline">
+                            {% csrf_token %}
+                            <button type="submit"
+                                class="p-2 bg-white/5 hover:bg-red-500/20 text-red-500 rounded-lg transition"
+                                title="Delete Raffle">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        <span
+                            class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest {% if raffle.is_approved %}bg-blue-500/10 text-blue-400{% else %}bg-amber-500/10 text-amber-500{% endif %}">
+                            {% if raffle.is_approved %}Live{% else %}Pending{% endif %}
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest 
+                                {% if raffle.status == 'active' %}bg-green-500/10 text-green-400
+                                {% elif raffle.status == 'locked' %}bg-orange-500/10 text-orange-400
+                                {% elif raffle.status == 'ended' %}bg-[#A2F625]/10 text-[#A2F625]
+                                {% else %}bg-red-500/10 text-red-500{% endif %}">
+                            {{ raffle.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Entries</p>
+                        <p class="text-xl font-black text-white">{{ raffle.tickets.count }} <span
+                                class="text-gray-600 text-xs font-normal">/ {{ raffle.target_participants }}</span>
+                        </p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Ticket</p>
+                        <p class="text-xl font-black text-white">₦{{ raffle.price|floatformat:0 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3 mt-auto">
+                <a href="{% url 'raffle:raffle_detail' raffle.custom_id %}" target="_blank"
+                    class="flex-1 bg-white/5 hover:bg-white text-white hover:text-black px-4 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest text-center transition">
+                    Full View
+                </a>
+
+                {% if raffle.is_approved and raffle.status == 'active' %}
+                <button onclick="lockRaffle('{{ raffle.custom_id }}')" id="lock-btn-{{ raffle.custom_id }}"
+                    class="flex-1 bg-orange-600 hover:bg-orange-500 text-white px-4 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition shadow-lg shadow-orange-600/20">
+                    Lock Entries
+                </button>
+                {% endif %}
+
+                {% if raffle.status == 'locked' %}
+                <button onclick="openWinnersModal('{{ raffle.custom_id }}', '{{ raffle.title|escapejs }}')"
+                    class="flex-1 bg-[#A2F625] hover:bg-white text-black px-4 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition shadow-lg shadow-[#A2F625]/20">
+                    Run Draw
+                </button>
+                {% endif %}
+
+                {% if raffle.status == 'ended' %}
+                <button onclick="openAnalyticsModal('{{ raffle.custom_id }}', '{{ raffle.title|escapejs }}')"
+                    class="flex-1 bg-white/10 hover:bg-white text-white hover:text-black px-4 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition">
+                    📊 Analytics
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div
+            class="md:col-span-2 py-20 bg-white/5 rounded-[3rem] border border-dashed border-white/10 flex flex-col items-center justify-center">
+            <p class="text-gray-500 font-bold mb-4 uppercase tracking-widest">No Active Campaigns</p>
+            <button onclick="document.getElementById('toggleRaffleFormBtn').click()"
+                class="text-[#A2F625] font-black uppercase text-xs hover:underline">Start Your First Raffle
+                →</button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- WINNERS MODAL -->
+<div id="winnersModal"
+    class="fixed inset-0 bg-black/95 hidden flex flex-col justify-center items-center z-[100] p-6 backdrop-blur-xl transition-all duration-300">
+    <div id="modalContent"
+        class="bg-[#0F172A] border border-[#A2F625]/20 rounded-[3rem] max-w-2xl w-full p-12 shadow-[0_0_100px_rgba(162,246,37,0.1)] transform scale-95 opacity-0 transition-all duration-500 text-center relative overflow-hidden">
+
+        <h2 id="modalTitle" class="text-4xl font-black text-white italic uppercase mb-2">Final Draw Phase</h2>
+        <p id="modalSubtitle" class="text-gray-400 mb-10">Raffle: <span id="raffleNameTarget"
+                class="text-[#A2F625]"></span></p>
+
+        <!-- Step 1: Input Seed -->
+        <div id="seedArea" class="space-y-6">
+            <div class="text-left">
+                <label class="block text-[10px] font-black text-[#A2F625] uppercase tracking-[0.3em] mb-3">Provably Fair
+                    Selection Seed</label>
+                <input type="text" id="externalSeedInput" placeholder="Enter BTC hash or random text..."
+                    class="w-full bg-black/40 border border-white/10 text-white px-6 py-5 rounded-2xl outline-none focus:border-[#A2F625] transition font-mono text-sm placeholder:text-gray-700">
+                <p class="text-[10px] text-gray-500 mt-3 font-medium italic">This seed is combined with the participant
+                    list hash to ensure winners are chosen deterministically and transparently.</p>
+            </div>
+
+            <button onclick="triggerGenerateWinners()" id="drawConfirmBtn"
+                class="w-full bg-[#A2F625] text-black font-black uppercase tracking-tighter py-5 rounded-2xl hover:bg-white transition-all transform hover:scale-[1.02] active:scale-95 shadow-xl shadow-[#A2F625]/20">
+                ⚡ Generate Lucky Winners
+            </button>
+        </div>
+
+        <!-- Step 2: Spinner -->
+        <div id="spinnerArea" class="hidden flex flex-col items-center justify-center py-10">
+            <div
+                class="w-16 h-16 border-4 border-[#A2F625]/20 border-t-[#A2F625] border-solid rounded-full animate-spin">
+            </div>
+            <p class="text-[#A2F625] font-black uppercase tracking-widest text-xs mt-8 animate-pulse">Hashing Entropy...
+            </p>
+        </div>
+
+        <!-- Step 3: Results -->
+        <div id="resultsArea" class="hidden space-y-6">
+            <div id="winnersList" class="space-y-3 max-h-80 overflow-y-auto pr-2 text-left custom-scrollbar">
+                <!-- Data here -->
+            </div>
+            <button onclick="closeWinnersModal()"
+                class="w-full bg-white text-black font-black uppercase tracking-tighter py-4 rounded-2xl hover:bg-[#A2F625] transition">
+                Return to Dashboard
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ANALYTICS MODAL -->
+<div id="analyticsModal"
+    class="fixed inset-0 bg-black/95 hidden flex flex-col justify-center items-center z-[100] p-6 backdrop-blur-xl transition-all duration-300">
+    <div id="analyticsContent"
+        class="bg-[#0F172A] border border-[#A2F625]/20 rounded-[3rem] max-w-2xl w-full p-12 shadow-[0_0_100px_rgba(162,246,37,0.1)] text-center relative overflow-hidden">
+        <h2 class="text-4xl font-black text-white italic uppercase mb-2">Campaign Economics</h2>
+        <p class="text-gray-400 mb-10">Detailed Revenue & Share Breakdown</p>
+
+        <div id="analyticsData" class="grid grid-cols-2 gap-6 text-left">
+            <!-- Data populated via JS -->
+        </div>
+
+        <button onclick="document.getElementById('analyticsModal').classList.add('hidden')"
+            class="w-full mt-10 bg-white text-black font-black uppercase tracking-tighter py-4 rounded-2xl hover:bg-[#A2F625] transition">
+            Close Analysis
+        </button>
+    </div>
+</div>
+
+<!-- WITHDRAWAL MODAL -->
+<div id="withdrawalModal"
+    class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[100] p-6 backdrop-blur-xl">
+    <div class="bg-[#0F172A] border border-white/10 rounded-[3rem] max-w-md w-full p-10 shadow-2xl relative">
+        <h2 class="text-3xl font-black text-white italic uppercase mb-2">Request Payout</h2>
+        <p class="text-gray-400 text-xs mb-8">Min ₦5,000. Balance: <span class="text-[#A2F625] font-bold">₦{{
+                wallet.balance|floatformat:2 }}</span>. <span
+                class="text-xs text-orange-400 font-bold block mt-2 italic">A flat ₦100 processing fee applies.</span>
+        </p>
+
+        <form method="post" action="{% url 'raffle:request_raffle_withdrawal' %}" class="space-y-5">
+            {% csrf_token %}
+            {% for field in withdrawal_form %}
+            <div class="space-y-2">
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ field.label
+                    }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                <p class="text-red-500 text-[10px]">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <div class="pt-6 grid grid-cols-2 gap-4">
+                <button type="button" onclick="document.getElementById('withdrawalModal').classList.add('hidden')"
+                    class="bg-white/5 text-gray-400 font-bold py-4 rounded-2xl hover:bg-white/10 transition uppercase text-xs">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="bg-white text-black font-black py-4 rounded-2xl hover:bg-[#A2F625] transition uppercase text-xs tracking-tighter">
+                    Confirm →
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Wallet History Sidebar/Modal -->
+<div id="historySidebar"
+    class="fixed inset-y-0 right-0 w-full sm:w-96 bg-[#0F172A] border-l border-white/10 z-[150] transform translate-x-full transition-transform duration-500 shadow-2xl flex flex-col">
+    <div class="p-8 border-b border-white/5 flex justify-between items-center bg-black/20">
+        <h3 class="text-xl font-black text-white italic uppercase">Wallet History</h3>
+        <button onclick="toggleHistory()" class="text-gray-500 hover:text-white transition group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 group-hover:rotate-90 transition-transform"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-6 space-y-4" id="historyContent">
+        <!-- History items will be injected here -->
+        <div class="animate-pulse space-y-4">
+            <div class="h-16 bg-white/5 rounded-2xl"></div>
+            <div class="h-16 bg-white/5 rounded-2xl"></div>
+            <div class="h-16 bg-white/5 rounded-2xl"></div>
+        </div>
+    </div>
+</div>
+
+<!-- History Overlay -->
+<div id="historyOverlay" onclick="toggleHistory()"
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[140] hidden transition-opacity duration-300 opacity-0"></div>
+
+<script>
+    function toggleHistory() {
+        const sidebar = document.getElementById('historySidebar');
+        const overlay = document.getElementById('historyOverlay');
+        const isHidden = sidebar.classList.contains('translate-x-full');
+
+        if (isHidden) {
+            sidebar.classList.remove('translate-x-full');
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            fetchHistory();
+        } else {
+            sidebar.classList.add('translate-x-full');
+            overlay.classList.remove('opacity-100');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+    }
+
+    async function fetchHistory() {
+        const container = document.getElementById('historyContent');
+        try {
+            const response = await fetch("{% url 'raffle:wallet_history' %}");
+            const data = await response.json();
+
+            if (data.status === 'success' && data.transactions.length > 0) {
+                container.innerHTML = data.transactions.map(tx => `
+                    <div class="p-5 rounded-[1.5rem] bg-white/[0.03] border border-white/5 hover:border-white/10 transition group">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[9px] font-black uppercase tracking-widest ${tx.type === 'credit' ? 'text-[#A2F625]' : 'text-red-400'}">${tx.type}</span>
+                            <span class="text-[10px] text-gray-600 font-bold">${tx.date}</span>
+                        </div>
+                        <p class="text-white text-xs font-bold leading-relaxed mb-1">${tx.description}</p>
+                        <p class="text-lg font-black ${tx.type === 'credit' ? 'text-white' : 'text-red-400'}">
+                            ${tx.type === 'credit' ? '+' : '-'}₦${tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </p>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = `
+                    <div class="py-20 text-center text-gray-500">
+                        <span class="text-4xl block mb-4">📜</span>
+                        <p class="text-[10px] font-black uppercase tracking-widest">No transaction history yet</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            container.innerHTML = '<p class="text-red-500 text-sm text-center">Failed to load history.</p>';
+        }
+    }
+</script>
+
+<script>
+    // DASHBOARD LOGIC
+    const toggleBtn = document.getElementById('toggleRaffleFormBtn');
+    const formContainer = document.getElementById('createRaffleFormContainer');
+    let isOpen = false;
+
+    toggleBtn?.addEventListener('click', () => {
+        if (!isOpen) {
+            formContainer.style.maxHeight = formContainer.scrollHeight + "px";
+        } else {
+            formContainer.style.maxHeight = "0px";
+        }
+        isOpen = !isOpen;
+    });
+
+    const modal = document.getElementById('winnersModal');
+    const modalContent = document.getElementById('modalContent');
+    const seedArea = document.getElementById('seedArea');
+    const spinnerArea = document.getElementById('spinnerArea');
+    const resultsArea = document.getElementById('resultsArea');
+    const winnersList = document.getElementById('winnersList');
+    const modalTitle = document.getElementById('modalTitle');
+    const raffleNameTarget = document.getElementById('raffleNameTarget');
+    const externalSeedInput = document.getElementById('externalSeedInput');
+    let currentRaffleId = null;
+    let refreshOnClose = false;
+
+    function openWinnersModal(customId, title) {
+        currentRaffleId = customId;
+        raffleNameTarget.textContent = title;
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 50);
+        seedArea.classList.remove('hidden');
+        spinnerArea.classList.add('hidden');
+        resultsArea.classList.add('hidden');
+    }
+
+    function triggerGenerateWinners() {
+        const seed = externalSeedInput.value.trim();
+        if (!seed) return alert("External seed required");
+
+        seedArea.classList.add('hidden');
+        spinnerArea.classList.remove('hidden');
+
+        fetch(`{% url 'raffle:generate_raffle_winners' '000000' %}`.replace('000000', currentRaffleId), {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            body: new URLSearchParams({ 'external_seed': seed })
+        })
+            .then(res => res.json())
+            .then(data => {
+                setTimeout(() => {
+                    spinnerArea.classList.add('hidden');
+                    resultsArea.classList.remove('hidden');
+                    if (data.status === 'success') {
+                        modalTitle.textContent = "Draw Complete!";
+                        refreshOnClose = true;
+                        // Logic to list winners would go here if returned
+                    } else {
+                        alert(data.error);
+                    }
+                }, 2500);
+            });
+    }
+
+    function lockRaffle(customId) {
+        if (!confirm("Lock list? This prevents new entries.")) return;
+        fetch(`{% url 'raffle:lock_raffle' '000000' %}`.replace('000000', customId), {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') window.location.reload();
+                else alert(data.message);
+            });
+    }
+
+    function closeWinnersModal() {
+        modal.classList.add('hidden');
+        if (refreshOnClose) window.location.reload();
+    }
+
+    // ANALYTICS LOGIC
+    function openAnalyticsModal(customId, title) {
+        const aModal = document.getElementById('analyticsModal');
+        const aData = document.getElementById('analyticsData');
+        aData.innerHTML = `<div class="col-span-2 text-center py-10 text-gray-500">Loading metrics...</div>`;
+        aModal.classList.remove('hidden');
+
+        fetch(`{% url 'raffle:raffle_analytics_api' '000000' %}`.replace('000000', customId))
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    aData.innerHTML = `<div class="col-span-2 text-center py-10 text-red-500">${data.error}</div>`;
+                    return;
+                }
+
+                aData.innerHTML = `
+                    <div class="bg-white/5 p-6 rounded-2xl border border-white/5">
+                        <p class="text-[9px] text-gray-500 uppercase font-black mb-1">Total Revenue</p>
+                        <p class="text-2xl font-black text-white">₦${data.total_revenue.toLocaleString()}</p>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-2xl border border-white/5">
+                        <p class="text-[9px] text-gray-500 uppercase font-black mb-1">Total Payout</p>
+                        <p class="text-2xl font-black text-white">₦${data.payout_pool.toLocaleString()}</p>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-2xl border border-white/5 col-span-2">
+                        <p class="text-[9px] text-gray-500 uppercase font-black mb-1">Effective Loss (Shared Pool)</p>
+                        <p class="text-3xl font-black text-[#A2F625]">₦${data.total_loss.toLocaleString()}</p>
+                    </div>
+                    
+                    <div class="col-span-2 mt-4 pt-4 border-t border-white/5 grid grid-cols-2 gap-4">
+                        <div class="bg-[#A2F625]/5 p-6 rounded-2xl border border-[#A2F625]/20">
+                            <p class="text-[9px] text-gray-500 uppercase font-black mb-1">Host Share (60%)</p>
+                            <p class="text-xl font-black text-white">₦${data.host_share.toLocaleString()}</p>
+                        </div>
+                        <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                            <p class="text-[9px] text-gray-500 uppercase font-black mb-1">System Share (40%)</p>
+                            <p class="text-xl font-black text-white">₦${data.system_share.toLocaleString()}</p>
+                        </div>
+                        ${data.is_referred ? `
+                        <div class="bg-blue-500/5 p-6 rounded-2xl border border-blue-500/20 col-span-2">
+                            <p class="text-[8px] text-blue-400 uppercase font-black mb-1 italic">
+                                🔗 Partner Referral Active: ${data.partner_name}
+                            </p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] text-gray-500 uppercase font-black">Partner Commission (10% of sys)</span>
+                                <span class="text-xl font-black text-blue-400">₦${data.partner_share.toLocaleString()}</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            })
+            .catch(err => {
+                aData.innerHTML = `<div class="col-span-2 text-center py-10 text-red-500">Failed to load analytics. Please try again later.</div>`;
+            });
+    }
+</script>
+
+{{ chart_data|json_script:"chart-data" }}
+
+<script>
+    // CHART LOGIC
+    const ctx = document.getElementById('salesChart')?.getContext('2d');
+    if (ctx) {
+        const chartData = JSON.parse(document.getElementById('chart-data').textContent);
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: 'Tickets Sold',
+                    data: chartData.values,
+                    borderColor: '#A2F625',
+                    backgroundColor: 'rgba(162, 246, 37, 0.1)',
+                    borderWidth: 4,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#A2F625',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: 'rgba(255,255,255,0.5)', font: { weight: 'bold' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: 'rgba(255,255,255,0.5)', font: { weight: 'bold' } }
+                    }
+                }
+            }
+        });
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}

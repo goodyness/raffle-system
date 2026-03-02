@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A0F12;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #0F172A;
+            border-radius: 20px;
+            border: 1px solid #A2F62533;
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #1E293B;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 1px solid #ffffff11;
+        }
+
+        .content {
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .amount-box {
+            background-color: #A2F625;
+            color: #000000;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
+            font-weight: 800;
+            font-size: 24px;
+        }
+
+        .footer {
+            padding: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #64748B;
+            background-color: #0A0F12;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #A2F625;
+            color: #000000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: #A2F625;
+            margin: 0;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .details {
+            background-color: #1E293B;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            border-bottom: 1px solid #ffffff08;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Withdrawal Approved</h1>
+        </div>
+        <div class="content">
+            <p>Hello <strong>{{ user.full_name }}</strong>,</p>
+            <p>Great news! Your withdrawal request has been verified and approved by the administration. The funds are
+                now being transferred to your provided bank account.</p>
+
+            <div class="amount-box">
+                ₦{{ withdrawal.net_payable|floatformat:2 }}
+            </div>
+
+            <div class="details">
+                <div class="detail-row">
+                    <span>Requested Amount:</span>
+                    <span>₦{{ withdrawal.amount|floatformat:2 }}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Processing Fee:</span>
+                    <span>₦100.00</span>
+                </div>
+                <div class="detail-row">
+                    <span>Account Number:</span>
+                    <span>{{ withdrawal.account_number }}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Bank Name:</span>
+                    <span>{{ withdrawal.bank_name }}</span>
+                </div>
+            </div>
+
+            <p style="margin-top: 30px;">Thank you for using our premium raffle platform. We wish you more luck in your
+                future entries!</p>
+
+            <center>
+                <a href="{{ base_url }}" class="btn">VISIT DASHBOARD</a>
+            </center>
+        </div>
+        <div class="footer">
+            &copy; 2026 Premium Raffle System. All rights reserved.<br>
+            This is an automated security notification.
+        </div>
+    </div>
+</body>
+
+</html>

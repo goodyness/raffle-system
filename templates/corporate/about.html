@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - Raffle System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#0A0D14] pt-24 pb-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Hero Section -->
+        <div class="text-center mb-16 relative">
+            <div class="absolute inset-0 flex justify-center items-center pointer-events-none">
+                <div class="w-64 h-64 bg-[#A2F625]/10 rounded-full blur-3xl"></div>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4 relative z-10">
+                Redefining <span class="text-[#A2F625]">Digital Campaigns</span>
+            </h1>
+            <p class="text-lg text-gray-400 max-w-2xl mx-auto relative z-10">
+                We built this platform to bring absolute transparency, provable fairness, and trustless distribution to
+                online raffles and giveaways.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+            <div class="bg-[#111827] border border-gray-800 rounded-3xl p-8 hover:border-[#A2F625]/30 transition-all">
+                <div class="w-12 h-12 bg-[#A2F625]/10 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-6 h-6 text-[#A2F625]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Guaranteed Fairness</h3>
+                <p class="text-gray-400 leading-relaxed">
+                    Our winner selection process is handled exclusively by a rigid algorithm. With zero manual
+                    intervention allowed, every participant has a mathematically equal chance of winning.
+                </p>
+            </div>
+
+            <div class="bg-[#111827] border border-gray-800 rounded-3xl p-8 hover:border-[#A2F625]/30 transition-all">
+                <div class="w-12 h-12 bg-[#A2F625]/10 rounded-xl flex items-center justify-center mb-6">
+                    <svg class="w-6 h-6 text-[#A2F625]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Instant Settlements</h3>
+                <p class="text-gray-400 leading-relaxed">
+                    When a campaign concludes, the system automatically segments the payout pool between organizers and
+                    the platform. No complicated accounting, just simple, transparent breakdowns.
+                </p>
+            </div>
+        </div>
+
+        <div
+            class="bg-gradient-to-br from-[#111827] to-[#0A0D14] border border-gray-800 rounded-3xl p-8 md:p-12 text-center">
+            <h2 class="text-2xl font-bold text-white mb-4">Our Mission</h2>
+            <p class="text-gray-400 leading-relaxed max-w-2xl mx-auto mb-8">
+                To eliminate the friction and doubts associated with independent giveaways. Whether you are a creator
+                running a merch drop, or a brand expanding your reach, our escrow-backed system ensures your audience
+                feels safe and your payouts are secure.
+            </p>
+
+            {% if not user.is_authenticated %}
+            <a href="{% url 'accounts:register_participant' %}"
+                class="inline-block bg-[#A2F625] text-black font-black py-4 px-8 rounded-2xl hover:bg-[#8CD81B] transition-colors transform hover:scale-105">
+                Join the Platform
+            </a>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

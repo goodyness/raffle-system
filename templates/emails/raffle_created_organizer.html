@@ -1,0 +1,22 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="font-size: 24px; font-weight: bold; margin-bottom: 16px;">Raffle Created! 🚀</h2>
+<p>Hello <strong>{{ organizer.full_name|default:organizer.username }}</strong>,</p>
+<p>Your Raffle <strong>"{{ raffle.title }}"</strong> has been successfully created.</p>
+
+<div
+    style="background: #f9f9f9; border-left: 4px solid #A2F625; padding: 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+    <p style="margin: 10px 0;"><strong>Status:</strong> Awaiting Admin Approval</p>
+    <p style="margin: 10px 0;"><strong>Price per Entry:</strong> ₦{{ raffle.price }}</p>
+    <p style="margin: 10px 0;"><strong>Target Winners:</strong> {{ raffle.num_winners }}</p>
+    <p style="margin: 10px 0;"><strong>Payout Pool:</strong> {{ raffle.payout_percentage }}%</p>
+</div>
+
+<p>Our administrators have been notified and will review your Raffle shortly. Once approved, it will be visible on the
+    public listings and you can start promoting your link!</p>
+
+<a href="{{ BASE_URL }}/raffle/organizer/raffles/"
+    style="display: inline-block; padding: 12px 24px; background-color: #A2F625; color: #111D22; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 20px;">Go
+    to Dashboard</a>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="font-size: 24px; font-weight: bold; margin-bottom: 16px;">New Raffle Awaiting Approval</h2>
+<p>A new Raffle has been created by <strong>{{ organizer.full_name }}</strong> ({{ organizer.email }}).</p>
+
+<div style="margin: 20px 0; padding: 20px; background: #f4f4f4; border-radius: 8px;">
+    <p style="margin: 10px 0;"><strong>Title:</strong> {{ raffle.title }}</p>
+    <p style="margin: 10px 0;"><strong>Description:</strong> {{ raffle.description|truncatechars:100 }}</p>
+    <p style="margin: 10px 0;"><strong>Target Participants:</strong> {{ raffle.target_participants }}</p>
+    <p style="margin: 10px 0;"><strong>Payout %:</strong> {{ raffle.payout_percentage }}%</p>
+</div>
+
+<p>Please log in to the admin dashboard to review and approve this Raffle.</p>
+
+<a href="{{ BASE_URL }}/raffle/admin/raffles/"
+    style="display: inline-block; background: #111D22; color: #A2F625; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px;">Review
+    Raffle</a>
+{% endblock %}

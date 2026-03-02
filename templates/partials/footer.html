@@ -1,0 +1,28 @@
+<footer class="bg-[#111827] text-gray-400 py-12 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h3 class="text-white text-lg font-bold mb-4">RAFFLE SYSTEM</h3>
+                <p class="text-sm">Direct, transparent, and fair raffle experiences for everyone.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-4">Quick Links</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="{% url 'home' %}" class="hover:text-[#A2F625]">Home</a></li>
+                    <li><a href="{% url 'raffle:about_us' %}" class="hover:text-[#A2F625]">About Us</a></li>
+                    <li><a href="{% url 'raffle:contact_us' %}" class="hover:text-[#A2F625]">Contact Support</a></li>
+                    <li><a href="{% url 'raffle:terms_and_conditions' %}" class="hover:text-[#A2F625]">Terms of
+                            Service</a></li>
+                    <li><a href="{% url 'raffle:privacy_policy' %}" class="hover:text-[#A2F625]">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-4">Support</h4>
+                <p class="text-sm">Questions? Contact us at support@raffle-system.com</p>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 mt-12 pt-8 text-center text-xs">
+            <p>&copy; {% now "Y" %} Raffle System. All rights reserved.</p>
+        </div>
+    </div>
+</footer>

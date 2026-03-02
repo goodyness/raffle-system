@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Successful Entry | Raffle System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#0A0F12] flex items-center justify-center py-20 px-6 mt-12">
+
+    <!-- Glow -->
+    <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#A2F625]/5 rounded-full blur-[120px]">
+    </div>
+
+    <div
+        class="max-w-xl w-full bg-[#0F172A] border border-white/5 rounded-[3rem] p-12 text-center shadow-2xl relative z-10 animate-fade-in-up">
+
+        <!-- Icon -->
+        <div
+            class="w-24 h-24 bg-[#A2F625] rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(162,246,37,0.3)]">
+            <svg class="w-12 h-12 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+
+        <h1 class="text-4xl font-black italic uppercase tracking-tighter text-white mb-4">You're in the Draw!</h1>
+        <p class="text-gray-400 mb-10">Your ticket has been confirmed. A confirmation email has been sent to <span
+                class="text-white font-bold">{{ ticket.email }}</span>.</p>
+
+        <!-- Ticket Card -->
+        <div class="bg-black/40 border border-white/10 rounded-2xl p-8 mb-10 text-left relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                <span class="text-6xl italic font-black text-white">#01</span>
+            </div>
+
+            <p class="text-[10px] font-black text-[#A2F625] uppercase tracking-[0.3em] mb-4">Official Ticket</p>
+            <h3 class="text-2xl font-black text-white uppercase italic mb-2">{{ ticket.raffle.title }}</h3>
+            <div class="flex items-center gap-4 mt-6">
+                <div class="bg-white/5 px-4 py-2 rounded-xl">
+                    <p class="text-[8px] text-gray-500 uppercase font-black">Ticket Number</p>
+                    <p class="text-lg font-mono font-black text-white">{{ ticket.ticket_number }}</p>
+                </div>
+                <div class="bg-white/5 px-4 py-2 rounded-xl">
+                    <p class="text-[8px] text-gray-500 uppercase font-black">Price Paid</p>
+                    <p class="text-lg font-black text-[#A2F625]">₦{{ ticket.amount_paid|floatformat:0 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHARE -->
+        <div class="space-y-4">
+            <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Boost Your Luck / Referral Code
+            </p>
+            <div class="flex items-center gap-2 bg-white/5 p-2 rounded-2xl border border-white/5">
+                <input type="text" readonly value="{{ ticket.ticket_number }}" id="refCode"
+                    class="flex-1 bg-transparent text-white font-mono text-center outline-none">
+                <button onclick="copyRef()"
+                    class="bg-[#A2F625] text-black font-black text-[10px] uppercase px-4 py-3 rounded-xl hover:bg-white transition">Copy</button>
+            </div>
+        </div>
+
+        <div class="mt-12">
+            <a href="{% url 'raffle:raffle_detail' ticket.raffle.custom_id %}"
+                class="text-white font-black uppercase text-xs tracking-widest hover:text-[#A2F625] transition underline underline-offset-8 decoration-2">Return
+                to Raffle Detail</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyRef() {
+        const input = document.getElementById('refCode');
+        input.select();
+        document.execCommand('copy');
+        alert('Referral Ticket Number copied!');
+    }
+</script>
+
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+</style>
+{% endblock %}

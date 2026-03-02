@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Raffles | Raffle System{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 mt-20">
+    <div class="flex justify-between items-center mb-10">
+        <h1 class="text-4xl font-black italic uppercase tracking-tighter text-white">Review Submissions</h1>
+        <a href="{% url 'accounts:admin_dashboard' %}"
+            class="text-gray-500 hover:text-white transition text-xs font-black uppercase">← Dashboard</a>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6">
+        {% for raffle in raffles %}
+        <div
+            class="bg-[#0F172A] border border-white/5 rounded-[2.5rem] p-8 shadow-xl flex flex-col md:flex-row justify-between items-center group hover:border-[#A2F625]/20 transition-all">
+            <div class="flex-1">
+                <div class="flex items-center gap-4 mb-2">
+                    <h4 class="text-2xl font-black text-white uppercase italic leading-none">{{ raffle.title }}</h4>
+                    <span
+                        class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest {% if raffle.is_approved %}bg-blue-500/10 text-blue-400{% else %}bg-amber-500/10 text-amber-500{% endif %}">
+                        {% if raffle.is_approved %}Live{% else %}Pending Approval{% endif %}
+                    </span>
+                </div>
+                <p class="text-gray-500 text-xs mb-4">Organizer: <span class="text-white underline">{{ raffle.organizer.email }}</span> • Created on {{ raffle.created_at|date:"M d, Y" }}</p>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-2xl">
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-600 uppercase font-black mb-1">Ticket Price</p>
+                        <p class="text-lg font-black text-white">₦{{ raffle.price|floatformat:0 }}</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-600 uppercase font-black mb-1">Target</p>
+                        <p class="text-lg font-black text-white">{{ raffle.target_participants }}</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-600 uppercase font-black mb-1">Payout</p>
+                        <p class="text-lg font-black text-[#A2F625]">{{ raffle.payout_percentage|floatformat:0 }}%</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[10px] text-gray-600 uppercase font-black mb-1">Winners</p>
+                        <p class="text-lg font-black text-white">{{ raffle.num_winners }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3 mt-6 md:mt-0">
+                <a href="{% url 'accounts:admin_raffle_detail' raffle.custom_id %}"
+                    class="bg-white/10 hover:bg-white text-white hover:text-black px-8 py-4 rounded-2xl text-xs font-black uppercase text-center transition">
+                    Manage Campaign
+                </a>
+
+                <div class="flex gap-4">
+                    {% if not raffle.is_approved %}
+                    <form action="{% url 'accounts:approve_raffle' raffle.custom_id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="bg-[#A2F625] text-black font-black uppercase text-xs px-8 py-4 rounded-2xl hover:bg-white transition-all transform hover:scale-105 active:scale-95 shadow-xl shadow-[#A2F625]/10 whitespace-nowrap">
+                            Approve
+                        </button>
+                    </form>
+                    <form action="{% url 'accounts:decline_raffle' raffle.custom_id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="bg-red-500/10 text-red-500 border border-red-500/20 font-black uppercase text-xs px-8 py-4 rounded-2xl hover:bg-red-500 hover:text-white transition-all">
+                            Decline
+                        </button>
+                    </form>
+                    {% else %}
+                    <form action="{% url 'accounts:toggle_raffle_referral' raffle.custom_id %}" method="post"
+                        class="w-full">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="w-full {% if raffle.is_referral_enabled %}bg-[#A2F625]/10 text-[#A2F625] border-[#A2F625]/20{% else %}bg-white/5 text-gray-500 border-white/10{% endif %} border font-black uppercase text-xs px-8 py-4 rounded-2xl hover:bg-white hover:text-black transition-all">
+                            {% if raffle.is_referral_enabled %}Referrals: ON{% else %}Referrals: OFF{% endif %}
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div
+            class="py-20 bg-white/5 rounded-[3rem] border border-dashed border-white/10 flex flex-col items-center justify-center">
+            <p class="text-gray-500 font-bold uppercase tracking-widest">No Submissions Found</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

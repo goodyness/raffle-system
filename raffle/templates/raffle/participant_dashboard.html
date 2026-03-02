@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Dashboard | Raffle System{% endblock %}
+
+{% block extra_body %}
+<!-- Wallet History Sidebar/Modal -->
+<div id="historySidebar"
+    class="fixed inset-y-0 right-0 w-full sm:w-96 bg-[#0F172A] border-l border-white/10 z-[150] transform translate-x-full transition-transform duration-500 shadow-2xl flex flex-col">
+    <div class="p-8 border-b border-white/5 flex justify-between items-center bg-black/20">
+        <h3 class="text-xl font-black text-white italic uppercase">Wallet History</h3>
+        <button onclick="toggleHistory()" class="text-gray-500 hover:text-white transition group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 group-hover:rotate-90 transition-transform"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-6 space-y-4" id="historyContent">
+        <!-- History items will be injected here -->
+        <div class="animate-pulse space-y-4">
+            <div class="h-16 bg-white/5 rounded-2xl"></div>
+            <div class="h-16 bg-white/5 rounded-2xl"></div>
+            <div class="h-16 bg-white/5 rounded-2xl"></div>
+        </div>
+    </div>
+</div>
+
+<!-- History Overlay -->
+<div id="historyOverlay" onclick="toggleHistory()"
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[140] hidden transition-opacity duration-300 opacity-0"></div>
+
+<script>
+    function toggleHistory() {
+        const sidebar = document.getElementById('historySidebar');
+        const overlay = document.getElementById('historyOverlay');
+        const isHidden = sidebar.classList.contains('translate-x-full');
+
+        if (isHidden) {
+            sidebar.classList.remove('translate-x-full');
+            overlay.classList.remove('hidden');
+            setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            fetchHistory();
+        } else {
+            sidebar.classList.add('translate-x-full');
+            overlay.classList.remove('opacity-100');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+    }
+
+    async function fetchHistory() {
+        const container = document.getElementById('historyContent');
+        try {
+            const response = await fetch("{% url 'raffle:wallet_history' %}");
+            const data = await response.json();
+
+            if (data.status === 'success' && data.transactions.length > 0) {
+                container.innerHTML = data.transactions.map(tx => `
+                    <div class="p-5 rounded-[1.5rem] bg-white/[0.03] border border-white/5 hover:border-white/10 transition group">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[9px] font-black uppercase tracking-widest ${tx.type === 'credit' ? 'text-[#A2F625]' : 'text-red-400'}">${tx.type}</span>
+                            <span class="text-[10px] text-gray-600 font-bold">${tx.date}</span>
+                        </div>
+                        <p class="text-white text-xs font-bold leading-relaxed mb-1">${tx.description}</p>
+                        <p class="text-lg font-black ${tx.type === 'credit' ? 'text-white' : 'text-red-400'}">
+                            ${tx.type === 'credit' ? '+' : '-'}₦${tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        </p>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = `
+                    <div class="py-20 text-center text-gray-500">
+                        <span class="text-4xl block mb-4">📜</span>
+                        <p class="text-[10px] font-black uppercase tracking-widest">No transaction history yet</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            container.innerHTML = '<p class="text-red-500 text-sm text-center">Failed to load history.</p>';
+        }
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8 px-4 mt-20">
+
+    <!-- HEADER -->
+    <div
+        class="max-w-5xl mx-auto bg-[#0F172A] border border-white/5 text-white rounded-[2rem] p-10 shadow-2xl overflow-hidden relative">
+        <!-- Glow -->
+        <div class="absolute -top-24 -left-24 w-64 h-64 bg-[#A2F625]/10 rounded-full blur-[80px]"></div>
+
+        <div class="relative z-10 flex flex-col items-center text-center">
+            <div
+                class="w-20 h-20 rounded-2xl bg-[#A2F625] flex items-center justify-center shadow-[0_0_30px_rgba(162,246,37,0.3)] mb-6 transform rotate-6">
+                <span class="text-4xl text-black">🎟️</span>
+            </div>
+            <h1 class="text-4xl font-black italic uppercase tracking-tighter mb-2">Participant Dashboard</h1>
+            <p class="text-gray-400 max-w-md">Track your entries, check results, and manage your winnings.</p>
+
+            <div class="mt-6 border-t border-white/5 pt-6 w-full max-w-md flex justify-center">
+                <a href="{% url 'accounts:profile_settings' %}"
+                    class="bg-white/5 hover:bg-white text-gray-400 hover:text-black px-6 py-2 rounded-xl border border-white/10 transition flex items-center gap-2 group">
+                    <svg class="w-4 h-4 group-hover:rotate-90 transition-transform duration-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="text-[8px] uppercase font-black tracking-widest">Settings</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUICK STATS -->
+    <div class="max-w-5xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Wallet Balance -->
+        <div
+            class="bg-gradient-to-br from-[#1E293B] to-[#0F172A] border border-white/5 p-8 rounded-[2rem] shadow-xl flex flex-col items-center text-center group relative overflow-hidden">
+            <div class="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <p class="text-gray-400 text-xs font-black uppercase tracking-widest mb-4">Withdrawable Balance</p>
+            <h2 class="text-4xl font-black text-white mb-6">₦{{ wallet.balance|floatformat:2 }}</h2>
+            <div class="flex gap-2 w-full">
+                <button onclick="document.getElementById('withdrawalModal').classList.remove('hidden')"
+                    class="flex-1 bg-white/5 hover:bg-white text-white hover:text-black border border-white/10 px-4 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition transform active:scale-95">
+                    Withdraw
+                </button>
+                <button onclick="toggleHistory()"
+                    class="bg-[#A2F625] text-black px-4 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition transform active:scale-95">
+                    History
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="md:col-span-2 grid grid-cols-2 gap-6">
+            <div
+                class="bg-[#0F172A] border border-white/5 p-6 rounded-[2rem] shadow-xl flex flex-col items-center justify-center text-center">
+                <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-2">Total Won</p>
+                <h2 class="text-2xl font-black text-[#A2F625]">₦{{ total_won|floatformat:0 }}</h2>
+            </div>
+            <div
+                class="bg-[#0F172A] border border-white/5 p-6 rounded-[2rem] shadow-xl flex flex-col items-center justify-center text-center">
+                <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-2">Total Participation</p>
+                <h2 class="text-2xl font-black text-white">₦{{ total_spent|floatformat:0 }}</h2>
+            </div>
+            <div
+                class="bg-[#0F172A] border border-white/5 p-6 rounded-[2rem] shadow-xl flex flex-col items-center justify-center text-center">
+                <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-2">Active Tickets</p>
+                <h2 class="text-2xl font-black text-[#A2F625]">{{ active_tickets.count }}</h2>
+            </div>
+            <div
+                class="bg-[#0F172A] border border-white/5 p-6 rounded-[2rem] shadow-xl flex flex-col items-center justify-center text-center group">
+                <a href="{% url 'raffle:raffle_list' %}"
+                    class="text-[10px] font-black uppercase text-blue-400 hover:text-white transition">Browse Raffles
+                    →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ACTIVE TICKETS -->
+<div class="max-w-5xl mx-auto mt-12">
+    <h3 class="text-2xl font-black text-white italic uppercase mb-8 flex items-center gap-3">
+        <span class="text-[#A2F625]">/</span> Active Entries
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for ticket in active_tickets %}
+        <div
+            class="bg-[#0F172A] border border-white/5 rounded-[2rem] p-8 shadow-xl flex flex-col justify-between group hover:border-[#A2F625]/30 transition-all duration-500">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h4 class="text-xl font-black text-white uppercase italic group-hover:text-[#A2F625] transition">
+                        {{ ticket.raffle.title }}</h4>
+                    <p class="text-gray-500 text-[10px] font-mono tracking-tighter">{{ ticket.ticket_number }}</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest 
+                                {% if ticket.raffle.status == 'active' %}bg-green-500/10 text-green-400
+                                {% else %}bg-orange-500/10 text-orange-400{% endif %}">
+                    {{ ticket.raffle.get_status_display }}
+                </span>
+            </div>
+
+            <div class="flex justify-between items-end">
+                <div>
+                    <p class="text-[9px] text-gray-400 uppercase font-black mb-1">Purchased On</p>
+                    <p class="text-xs font-bold text-gray-300">{{ ticket.purchased_at|date:"M d, Y" }}</p>
+                </div>
+                <a href="{% url 'raffle:raffle_detail' ticket.raffle.custom_id %}"
+                    class="text-[#A2F625] text-xs font-black uppercase tracking-widest hover:underline">
+                    View Details →
+                </a>
+            </div>
+        </div>
+        {% empty %}
+        <div
+            class="md:col-span-2 py-16 bg-white/5 rounded-[2rem] border border-dotted border-white/10 flex flex-col items-center justify-center text-center">
+            <p class="text-gray-500 font-bold uppercase tracking-widest text-xs">No active entries yet.</p>
+            <a href="{% url 'raffle:raffle_list' %}"
+                class="mt-4 text-[#A2F625] font-black uppercase text-[10px] hover:underline">Find a Raffle to join
+                →</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- RAFFLE HISTORY -->
+<div class="max-w-5xl mx-auto mt-20">
+    <h3 class="text-2xl font-black text-white italic uppercase mb-8">Raffle History</h3>
+
+    <div class="bg-[#0F172A] border border-white/5 rounded-[2rem] overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="text-gray-500 border-b border-white/5 text-[10px] uppercase font-black tracking-widest">
+                        <th class="p-6">Raffle Title</th>
+                        <th class="p-6">Ticket ID</th>
+                        <th class="p-6">Outcome</th>
+                        <th class="p-6">Prize</th>
+                        <th class="p-6">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for ticket in ended_tickets %}
+                    <tr class="group hover:bg-white/[0.02] transition">
+                        <td class="p-6">
+                            <span class="font-bold text-white block">{{ ticket.raffle.title }}</span>
+                            <a href="{% url 'raffle:raffle_detail' ticket.raffle.custom_id %}"
+                                class="text-[9px] text-gray-500 hover:text-[#A2F625] uppercase font-bold">View
+                                Raffle</a>
+                        </td>
+                        <td class="p-6">
+                            <span class="text-gray-400 font-mono text-xs">{{ ticket.ticket_number }}</span>
+                        </td>
+                        <td class="p-6">
+                            {% if ticket.is_winner %}
+                            <span
+                                class="bg-[#A2F625]/10 text-[#A2F625] px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Winner</span>
+                            {% else %}
+                            <span
+                                class="bg-gray-500/10 text-gray-500 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">Better
+                                luck next time</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-6">
+                            <span
+                                class="{% if ticket.is_winner %}text-[#A2F625] font-black{% else %}text-gray-600{% endif %} font-bold">
+                                ₦{{ ticket.amount_won|floatformat:2 }}
+                            </span>
+                        </td>
+                        <td class="p-6">
+                            <span class="text-gray-600 text-[10px] font-bold">{{ ticket.purchased_at|date:"M d, Y"
+                                }}</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-20 text-center text-gray-500 italic">No historical data available.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<!-- WITHDRAWAL MODAL -->
+<div id="withdrawalModal"
+    class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-[100] p-6 backdrop-blur-xl">
+    <div class="bg-[#0F172A] border border-white/10 rounded-[3rem] max-w-md w-full p-10 shadow-2xl relative">
+        <h2 class="text-3xl font-black text-white italic uppercase mb-2">Cash Out Winnings</h2>
+        <p class="text-gray-400 text-xs mb-8">Min ₦5,000. Balance: <span class="text-[#A2F625] font-bold">₦{{
+                wallet.balance|floatformat:2 }}</span>. <span
+                class="text-xs text-orange-400 font-bold block mt-2 italic">A flat ₦100 processing fee applies.</span>
+        </p>
+
+        <form method="post" action="{% url 'raffle:request_raffle_withdrawal' %}" class="space-y-5">
+            {% csrf_token %}
+            {% for field in withdrawal_form %}
+            <div class="space-y-2 text-left">
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ field.label
+                    }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                <p class="text-red-500 text-[10px]">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <div class="pt-6 grid grid-cols-2 gap-4">
+                <button type="button" onclick="document.getElementById('withdrawalModal').classList.add('hidden')"
+                    class="bg-white/5 text-gray-400 font-bold py-4 rounded-2xl hover:bg-white/10 transition uppercase text-xs">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="bg-white text-black font-black py-4 rounded-2xl hover:bg-[#A2F625] transition uppercase text-xs tracking-tighter">
+                    Request Payout →
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

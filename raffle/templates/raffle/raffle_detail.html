@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ raffle.title }} | Raffle System{% endblock %}
+
+{% block extra_meta %}
+<meta property="og:title" content="Join my Raffle: {{ raffle.title }}">
+<meta property="og:description"
+    content="Win big with {{ raffle.title }}. Only ₦{{ raffle.price|floatformat:0 }} per ticket!">
+<meta property="og:image"
+    content="{{ request.scheme }}://{{ request.get_host }}{% url 'raffle:raffle_share_card' raffle.custom_id %}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta name="twitter:card" content="summary_large_image">
+{% endblock %}
+
+{% block content %}
+<style>
+    .privacy-blur {
+        filter: blur(5px);
+        transition: filter 0.3s ease;
+        user-select: none;
+    }
+
+    .privacy-blur:hover {
+        filter: blur(0);
+    }
+
+    /* Modal Styles */
+    #joinModal {
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    #joinModal.hidden {
+        display: none;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    #joinModal:not(.hidden) {
+        display: flex;
+        opacity: 1;
+        visibility: visible;
+    }
+</style>
+
+<div class="min-h-screen bg-[#0A0F12] py-24 px-6 lg:px-12 mt-12">
+    <div class="max-w-6xl mx-auto">
+
+        <!-- RAFFLE HEADER -->
+        <div class="flex flex-col items-center text-center mb-12 md:mb-20 relative">
+            <div
+                class="absolute -top-10 left-1/2 -translate-x-1/2 w-64 h-64 bg-[#A2F625]/5 rounded-full blur-[100px] pointer-events-none">
+            </div>
+
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#A2F625]/10 border border-[#A2F625]/20 mb-6 reveal-on-scroll">
+                <span class="relative flex h-2 w-2">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#A2F625] opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-[#A2F625]"></span>
+                </span>
+                <span class="text-[9px] font-black uppercase text-[#A2F625] tracking-widest">Active Draw</span>
+            </div>
+
+            <h1
+                class="text-4xl md:text-8xl font-black mb-6 md:mb-8 uppercase tracking-tighter italic text-white leading-tight md:leading-[0.85] reveal-on-scroll">
+                {{ raffle.title }}
+            </h1>
+            <p
+                class="text-sm md:text-lg text-gray-400 font-medium max-w-2xl mx-auto leading-relaxed reveal-on-scroll px-4">
+                {{ raffle.description }}
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-12 mb-20">
+            <!-- LEFT COLUMN: MEDIA & STATS -->
+            <div class="lg:col-span-8 space-y-12">
+                <!-- Media Section -->
+                <div
+                    class="relative rounded-[3.5rem] overflow-hidden bg-[#0F172A] border border-white/5 shadow-3xl group reveal-on-scroll">
+                    {% if raffle.image %}
+                    <img src="{{ raffle.image.url }}" alt="{{ raffle.title }}"
+                        class="w-full h-[550px] object-cover group-hover:scale-105 transition-transform duration-1000">
+                    {% else %}
+                    <div
+                        class="w-full h-[550px] bg-gradient-to-br from-[#0F172A] to-black flex items-center justify-center text-9xl grayscale group-hover:grayscale-0 transition duration-700">
+                        🎁
+                    </div>
+                    {% endif %}
+
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#0A0F12] via-transparent opacity-60"></div>
+
+                    <div class="absolute bottom-12 left-12 z-20">
+                        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[#A2F625] mb-4">Official Status
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <span
+                                class="px-8 py-3 bg-black/40 backdrop-blur-xl text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl border border-white/10">
+                                {{ raffle.get_status_display }}
+                            </span>
+                            {% if raffle.status == 'ended' %}
+                            <a href="{% url 'raffle:raffle_live_draw' raffle.custom_id %}"
+                                class="flex items-center gap-3 bg-[#A2F625] text-black px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white transition-all transform hover:scale-105 shadow-2xl shadow-[#A2F625]/20">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Watch Reveal
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transparency & Stats -->
+                <div
+                    class="bg-[#0F172A] border border-white/5 rounded-[2.5rem] md:rounded-[3.5rem] p-6 md:p-12 shadow-xl reveal-on-scroll">
+                    <h3 class="text-lg font-black text-white italic uppercase mb-8 flex items-center gap-3">
+                        <span class="text-[#A2F625]">/</span> Stats
+                    </h3>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+                        <div
+                            class="bg-white/[0.03] p-5 md:p-8 rounded-2xl border border-white/5 transition hover:bg-white/[0.05]">
+                            <p class="text-[8px] text-gray-500 uppercase font-black mb-2 tracking-tighter">Payout Pool
+                            </p>
+                            <p class="text-xl md:text-3xl font-black text-white italic">{{ raffle.payout_percentage|floatformat:0 }}%</p>
+                        </div>
+                        <div
+                            class="bg-white/[0.03] p-5 md:p-8 rounded-2xl border border-[#A2F625]/10 transition hover:bg-[#A2F625]/5">
+                            <p class="text-[8px] text-[#A2F625] uppercase font-black mb-2 tracking-tighter">Ticket</p>
+                            <p class="text-xl md:text-3xl font-black text-[#A2F625] italic">₦{{ raffle.price|floatformat:0 }}</p>
+                        </div>
+                        <div
+                            class="bg-white/[0.03] p-5 md:p-8 rounded-2xl border border-white/5 transition hover:bg-white/[0.05]">
+                            <p class="text-[8px] text-gray-500 uppercase font-black mb-2 tracking-tighter">Entries</p>
+                            <p class="text-xl md:text-3xl font-black text-white italic">{{ paid_entries_count }}</p>
+                        </div>
+                        <div
+                            class="bg-white/[0.03] p-5 md:p-8 rounded-2xl border border-white/5 transition hover:bg-white/[0.05]">
+                            <p class="text-[8px] text-gray-500 uppercase font-black mb-2 tracking-tighter">Winners</p>
+                            <p class="text-xl md:text-3xl font-black text-white italic">{{ raffle.num_winners }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: ACTION & SHARE -->
+            <div class="lg:col-span-4 space-y-8">
+                <!-- Action Card -->
+                <div
+                    class="bg-[#A2F625] p-10 rounded-[2.5rem] shadow-3xl text-center relative overflow-hidden group reveal-on-scroll">
+                    <p class="text-[10px] text-black font-black uppercase tracking-[0.3em] mb-4">Official Sweepstake</p>
+                    <h2 class="text-5xl font-black text-black mb-6 italic tracking-tighter" id="timer">--:--:--</h2>
+
+                    {% if raffle.is_revoked %}
+                    <div class="bg-black/10 rounded-2xl py-4 border border-black/5">
+                        <p class="text-black text-xs font-black uppercase tracking-widest">Suspended</p>
+                    </div>
+                    {% elif raffle.is_approved and raffle.status == 'active' %}
+                    <button onclick="toggleModal(true)"
+                        class="w-full bg-black text-white font-black py-5 rounded-2xl hover:bg-white hover:text-black transition-all transform active:scale-95 shadow-2xl uppercase tracking-[0.2em] text-xs">
+                        Join Now →
+                    </button>
+                    {% else %}
+                    <div class="bg-black/10 rounded-2xl py-4 border border-black/5">
+                        <p class="text-black text-xs font-black uppercase tracking-widest">Closed</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Viral Sharing -->
+                <div class="bg-[#0F172A] border border-white/5 rounded-[2.5rem] p-8 reveal-on-scroll">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-[#A2F625] mb-6 text-center">Viral
+                        Sharing</p>
+                    <div class="flex flex-col gap-3">
+                        <a href="https://wa.me/?text=Check out this Raffle: {{ raffle.title }} - Join here: {{ request.build_absolute_uri }}"
+                            target="_blank"
+                            class="flex items-center justify-center gap-3 bg-white/5 text-white px-6 py-4 rounded-2xl border border-white/5 hover:bg-[#25D366] hover:text-white transition-all">
+                            <span class="font-black uppercase text-[10px] tracking-widest">WhatsApp</span>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?text=Join my raffle for {{ raffle.title }}!&url={{ request.build_absolute_uri }}"
+                            target="_blank"
+                            class="flex items-center justify-center gap-3 bg-white/5 text-white px-6 py-4 rounded-2xl border border-white/5 hover:bg-[#1DA1F2] hover:text-white transition-all">
+                            <span class="font-black uppercase text-[10px] tracking-widest">Twitter / X</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FLOATING MOBILE ACTION -->
+<div class="fixed bottom-8 left-6 right-6 z-50 lg:hidden reveal-on-scroll">
+    <button onclick="toggleModal(true)"
+        class="w-full bg-[#A2F625] text-black font-black py-6 rounded-3xl shadow-[0_20px_40px_rgba(162,246,37,0.3)] flex items-center justify-between px-10 uppercase italic tracking-tighter">
+        <span>Enter Draw</span>
+        <span>₦{{ raffle.price|floatformat:0 }} →</span>
+    </button>
+</div>
+
+<!-- ENTRY MODAL -->
+<div id="joinModal" class="hidden fixed inset-0 z-[100] items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-md" onclick="toggleModal(false)"></div>
+    <div
+        class="relative w-full max-w-xl bg-[#0F172A] border border-white/10 rounded-[3rem] p-8 md:p-12 shadow-3xl overflow-y-auto max-h-[90vh]">
+        <button onclick="toggleModal(false)" class="absolute top-8 right-8 text-gray-500 hover:text-white transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+        <h3 class="text-3xl font-black text-white uppercase italic mb-2 tracking-tighter">Secure Entry</h3>
+        <p class="text-gray-500 text-sm font-medium mb-10">Fill your details to officialize your participation.</p>
+
+        <form method="POST" id="checkout-form" action="{% url 'raffle:join_raffle' raffle.custom_id %}"
+            class="space-y-6">
+            {% csrf_token %}
+            <div class="space-y-2">
+                <label class="block text-[10px] uppercase font-black text-gray-600 tracking-widest ml-1">Full
+                    Identity</label>
+                <input type="text" name="name" required value="{{ request.user.full_name|default:'' }}"
+                    class="w-full bg-white/5 text-white rounded-2xl px-6 py-4 border border-white/10 focus:border-[#A2F625] outline-none transition font-bold text-sm">
+            </div>
+            <div class="space-y-2">
+                <label class="block text-[10px] uppercase font-black text-gray-600 tracking-widest ml-1">Email
+                    System</label>
+                <input type="email" name="email" required value="{{ request.user.email|default:'' }}" {% if request.user.is_authenticated %}readonly{% endif %}
+                    class="w-full bg-white/5 text-white rounded-2xl px-6 py-4 border border-white/10 focus:border-[#A2F625] outline-none transition font-bold text-sm {% if request.user.is_authenticated %}opacity-50 cursor-not-allowed{% endif %}">
+            </div>
+            {% if raffle.price > 0 %}
+            <div class="space-y-2">
+                <label class="block text-[10px] uppercase font-black text-gray-600 tracking-widest ml-1">Payment
+                    Protocol</label>
+                <select name="payment_method" required
+                    class="w-full bg-white/5 text-white rounded-2xl px-6 py-4 border border-white/10 focus:border-[#A2F625] outline-none transition cursor-pointer font-black text-xs uppercase tracking-widest">
+                    <option value="paystack">Paystack Gateway</option>
+                    <option value="flutterwave">Flutterwave Gateway</option>
+                </select>
+            </div>
+            {% endif %}
+            <div class="pt-6">
+                <div class="flex items-center justify-between mb-6 px-2">
+                    <span class="text-[10px] font-black text-gray-600 uppercase tracking-widest">Total Payable</span>
+                    <span class="text-2xl font-black text-[#A2F625]">₦{{ raffle.price|floatformat:0 }}</span>
+                </div>
+                <button type="submit"
+                    class="w-full bg-[#A2F625] text-black font-black py-5 rounded-2xl hover:bg-white transition-all transform active:scale-95 shadow-2xl shadow-[#A2F625]/20 uppercase tracking-[0.2em] text-xs">
+                    Confirm Participation →
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if user_ticket and raffle.is_referral_enabled %}
+<!-- Referral Card -->
+<div
+    class="bg-gradient-to-br from-[#0F172A] to-black border border-[#A2F625]/20 rounded-[3rem] p-12 mb-20 shadow-2xl relative overflow-hidden group">
+    <div
+        class="absolute -top-10 -right-10 w-64 h-64 bg-[#A2F625]/10 rounded-full blur-[80px] group-hover:bg-[#A2F625]/20 transition-all">
+    </div>
+    <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
+        <div class="flex-1">
+            <h3 class="text-3xl font-black text-white mb-3 uppercase italic tracking-tighter">Multiply Your Luck
+            </h3>
+            <p class="text-gray-400 max-w-lg">Earn <span class="text-[#A2F625] font-bold">+1 Bonus Entry</span>
+                for every person who joins using your unique link.</p>
+        </div>
+        <div class="w-full md:w-auto flex flex-col sm:flex-row gap-4">
+            <input type="text" id="referral-link" readonly
+                value="{{ request.scheme }}://{{ request.get_host }}{% url 'raffle:raffle_detail' raffle.custom_id %}?ref={{ user_ticket.ticket_number }}"
+                class="bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-xs text-[#A2F625] font-mono outline-none min-w-[300px]">
+            <button onclick="copyReferralLink()"
+                class="bg-white text-black font-black px-10 py-4 rounded-2xl hover:bg-[#A2F625] transition active:scale-95 shadow-xl font-black uppercase text-xs tracking-widest whitespace-nowrap">
+                <span id="copy-text">Copy Link</span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ENTRIES TABLE -->
+<div class="mb-32">
+    <div class="flex items-center justify-between mb-10">
+        <h3 class="text-3xl font-black text-white italic uppercase tracking-tighter">Live Entries</h3>
+        <span
+            class="text-[10px] text-[#A2F625] font-bold uppercase tracking-[0.3em] bg-[#A2F625]/10 px-6 py-2 rounded-full border border-[#A2F625]/20">
+            {{ paid_entries_count }} Tracked
+        </span>
+    </div>
+
+    <div class="bg-[#0F172A] border border-white/5 rounded-[3rem] overflow-hidden shadow-2xl">
+        <table class="w-full text-left text-sm">
+            <thead>
+                <tr class="bg-white/[0.02] text-gray-500 uppercase text-[10px] font-black tracking-[0.3em]">
+                    <th class="px-10 py-6">Participant</th>
+                    <th class="px-10 py-6 text-center">Ticket ID</th>
+                    <th class="px-10 py-6 text-right">Moment</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+                {% for p in participants %}
+                <tr class="hover:bg-white/[0.02] transition group">
+                    <td class="px-10 py-6">
+                        <p class="text-white font-black group-hover:text-[#A2F625] transition privacy-blur">{{
+                            p.name }}</p>
+                    </td>
+                    <td class="px-10 py-6 text-center font-mono text-gray-500 text-xs">{{ p.ticket_number }}
+                    </td>
+                    <td class="px-10 py-6 text-right text-[10px] text-gray-600 font-bold uppercase tracking-widest">
+                        {{ p.purchased_at|timesince }} ago</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="px-10 py-20 text-center italic text-gray-600 font-medium">Be the
+                        first to secure a spot in this draw.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if participants.has_other_pages %}
+    <div class="mt-8 flex justify-center items-center gap-4">
+        {% if participants.has_previous %}
+        <a href="?page={{ participants.previous_page_number }}"
+            class="bg-white/5 border border-white/10 text-white font-black px-6 py-3 rounded-2xl hover:bg-[#A2F625] hover:text-black transition uppercase text-[10px] tracking-widest shadow-xl">Previous</a>
+        {% endif %}
+        <span class="text-gray-500 font-black text-[10px] uppercase tracking-widest">Page {{ participants.number
+            }} <span class="text-white/20 mx-2">/</span> {{ participants.paginator.num_pages }}</span>
+        {% if participants.has_next %}
+        <a href="?page={{ participants.next_page_number }}"
+            class="bg-white/5 border border-white/10 text-white font-black px-6 py-3 rounded-2xl hover:bg-[#A2F625] hover:text-black transition uppercase text-[10px] tracking-widest shadow-xl">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{% if winners %}
+<!-- WINNERS SECTION -->
+<div
+    class="text-center py-20 bg-gradient-to-t from-[#A2F625]/5 to-transparent rounded-[4rem] border border-[#A2F625]/10">
+    <h3 class="text-5xl font-black text-[#A2F625] italic uppercase tracking-tighter mb-4">The Hall of Fame</h3>
+    <p class="text-gray-500 font-medium mb-16">Congratulations to our lucky winners from this campaign.</p>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 px-10">
+        {% for w in winners %}
+        <div
+            class="bg-black/60 border-2 border-[#A2F625]/40 p-10 rounded-[3rem] shadow-2xl transform hover:-translate-y-2 transition duration-500">
+            <div
+                class="w-20 h-20 bg-[#A2F625] rounded-full flex items-center justify-center text-4xl mx-auto mb-8 shadow-[0_0_40px_rgba(162,246,37,0.3)]">
+                🏆</div>
+            <h4 class="text-2xl font-black text-white mb-2 uppercase privacy-blur">{{ w.name }}</h4>
+            <p class="text-4xl font-black text-[#A2F625] mb-6 tracking-tighter">₦{{ w.amount_won|floatformat:0 }}
+            </p>
+            <div class="inline-block px-5 py-2 bg-white/5 rounded-full border border-white/10">
+                <p class="text-[9px] text-gray-500 uppercase font-black tracking-widest">Ticket #{{ w.ticket_number
+                    }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-20">
+        <a href="{% url 'raffle:raffle_live_draw' raffle.custom_id %}"
+            class="inline-flex items-center gap-4 bg-white text-black font-black px-12 py-5 rounded-2xl hover:bg-[#A2F625] transition active:scale-95 shadow-2xl uppercase text-xs tracking-widest">
+            <span>🎬</span> Watch Reveal Animation
+        </a>
+    </div>
+</div>
+{% endif %}
+</div>
+</div>
+
+<script>
+    function toggleModal(show) {
+        const modal = document.getElementById('joinModal');
+        if (show) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        } else {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    function copyReferralLink() {
+        const copyText = document.getElementById("referral-link");
+        if (!copyText) return;
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value);
+
+        const btnText = document.getElementById("copy-text");
+        const originalText = btnText.textContent;
+        btnText.textContent = "COPIED!";
+        setTimeout(() => { btnText.textContent = originalText; }, 2000);
+    }
+
+    const endTime = new Date("{{ raffle.end_datetime|date:'Y-m-d H:i:s' }}").getTime();
+    const timerDisplay = document.getElementById('timer');
+
+    const countdown = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = endTime - now;
+
+        if (distance < 0) {
+            clearInterval(countdown);
+            if (timerDisplay) timerDisplay.innerHTML = "ENDED";
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((distance % (1000 * 60)) / 1000);
+
+        if (timerDisplay) {
+            if (days > 0) {
+                timerDisplay.innerHTML = `${days}d ${hours}h ${mins}m`;
+            } else {
+                timerDisplay.innerHTML = `${hours}h ${mins}m ${secs}s`;
+            }
+        }
+    }, 1000);
+</script>
+{% endblock %}

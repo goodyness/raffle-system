@@ -1,0 +1,29 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="font-size: 24px; font-weight: bold; margin-bottom: 16px;">Entry Confirmed! 🎁</h2>
+<p style="font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+    Hello {{ ticket.name }}, your entry for <strong>{{ raffle.title }}</strong> has been successfully received.
+</p>
+
+<div style="background: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+    <p style="margin: 0; font-size: 14px; color: #6b7280;">Ticket Number</p>
+    <p style="margin: 4px 0 0; font-size: 20px; font-weight: bold; color: #1A252B;">{{ ticket.ticket_number }}</p>
+
+    <div style="margin-top: 16px;">
+        <p style="margin: 0; font-size: 14px; color: #6b7280;">Raffle</p>
+        <p style="margin: 4px 0 0; font-size: 16px; font-weight: semi-bold;">{{ raffle.title }}</p>
+    </div>
+
+    {% if ticket.amount_paid > 0 %}
+    <div style="margin-top: 16px;">
+        <p style="margin: 0; font-size: 14px; color: #6b7280;">Amount Paid</p>
+        <p style="margin: 4px 0 0; font-size: 16px; font-weight: semi-bold;">₦{{ ticket.amount_paid }}</p>
+    </div>
+    {% endif %}
+</div>
+
+<p style="font-size: 14px; color: #6b7280; line-height: 1.6;">
+    Winners will be randomly selected and notified once the Raffle ends. Good luck!
+</p>
+{% endblock %}

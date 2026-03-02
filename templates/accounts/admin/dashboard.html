@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard | Raffle System{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 mt-20">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+        <div>
+            <h1 class="text-5xl font-black italic uppercase tracking-tighter text-white">System Pulse</h1>
+            <p class="text-gray-500 text-xs font-bold uppercase tracking-widest mt-2">Executive Overview & Command
+                Center</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="{% url 'accounts:admin_audit_log' %}"
+                class="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl text-[10px] font-black uppercase text-gray-400 hover:bg-white/10 hover:text-white transition">Audit
+                Logs</a>
+            <a href="{% url 'accounts:admin_spam_radar' %}"
+                class="bg-red-500/10 border border-red-500/20 px-6 py-3 rounded-2xl text-[10px] font-black uppercase text-red-500 hover:bg-red-500/20 transition">Spam
+                Radar</a>
+        </div>
+    </div>
+
+    <!-- Financial Pulse section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div
+            class="bg-gradient-to-br from-[#1E293B] to-[#0F172A] border border-[#A2F625]/30 p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition">
+                <span class="text-6xl text-[#A2F625]">💰</span>
+            </div>
+            <p class="text-[10px] text-[#A2F625] font-black uppercase tracking-widest mb-4">Total System Revenue</p>
+            <p class="text-5xl font-black text-white tracking-tighter mb-2">₦{{ total_system_revenue|floatformat:2 }}
+            </p>
+            <p class="text-[10px] text-gray-500 font-bold italic">Net profit from shares, fees & processing</p>
+        </div>
+
+        <div class="bg-[#0F172A] border border-white/5 p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition">
+                <span class="text-6xl text-blue-500">🏆</span>
+            </div>
+            <p class="text-[10px] text-blue-400 font-black uppercase tracking-widest mb-4">Total Winnings Paid</p>
+            <p class="text-5xl font-black text-white tracking-tighter mb-2">₦{{ total_winnings_paid|floatformat:2 }}</p>
+            <p class="text-[10px] text-gray-500 font-bold italic">Total value distributed to winners</p>
+        </div>
+
+        <div class="bg-[#0F172A] border border-white/5 p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition">
+                <span class="text-6xl text-orange-500">🏢</span>
+            </div>
+            <p class="text-[10px] text-orange-400 font-black uppercase tracking-widest mb-4">Organizer Earnings</p>
+            <p class="text-5xl font-black text-white tracking-tighter mb-2">₦{{ total_organizer_earnings|floatformat:2 }}</p>
+            <p class="text-[10px] text-gray-500 font-bold italic">Total revenue shared with hosts</p>
+        </div>
+    </div>
+
+    <!-- Secondary Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-12">
+        <div class="bg-white/5 border border-white/10 p-6 rounded-3xl">
+            <p class="text-[8px] text-gray-500 font-black uppercase mb-1">Today's Volume</p>
+            <p class="text-xl font-black text-[#A2F625]">{{ tickets_sold_today }} <span
+                    class="text-[10px] text-gray-500">Tickets</span></p>
+            <p class="text-[9px] font-bold text-gray-600 mt-1">₦{{ revenue_today|floatformat:2 }} Today</p>
+        </div>
+
+        <a href="{% url 'accounts:admin_raffle_list' %}"
+            class="bg-[#0F172A] border border-white/5 p-6 rounded-3xl hover:border-[#A2F625]/20 transition group">
+            <p class="text-[8px] text-gray-500 font-black uppercase tracking-widest mb-1 group-hover:text-[#A2F625]">
+                Total Raffles</p>
+            <p class="text-2xl font-black text-white">{{ total_raffles|default:"0" }}</p>
+            <div class="mt-2 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#A2F625] animate-pulse"></span>
+                <span class="text-[10px] font-bold text-[#A2F625]">{{ pending_raffles }} Reviewing</span>
+            </div>
+        </a>
+
+        <a href="{% url 'accounts:admin_user_list' %}"
+            class="bg-[#0F172A] border border-white/5 p-6 rounded-3xl hover:border-blue-500/20 transition group">
+            <p class="text-[8px] text-gray-500 font-black uppercase tracking-widest mb-1 group-hover:text-blue-400">
+                Platform Users</p>
+            <p class="text-2xl font-black text-white">{{ total_users|default:"0" }}</p>
+            <div class="mt-2 text-[9px] font-bold flex gap-3 text-gray-500">
+                <span class="text-blue-400">{{ total_participants }} Users</span>
+                <span class="text-orange-400">{{ total_organizers }} Hosts</span>
+            </div>
+        </a>
+
+        <a href="{% url 'accounts:admin_withdrawal_list' %}"
+            class="bg-[#0F172A] border border-white/5 p-6 rounded-3xl hover:border-orange-500/20 transition group">
+            <p class="text-[8px] text-gray-500 font-black uppercase tracking-widest mb-1 group-hover:text-orange-500">
+                Pending Liability</p>
+            <p class="text-2xl font-black text-white">₦{{ pending_withdrawals_total|floatformat:2 }}</p>
+            <div class="mt-2 flex items-center gap-2">
+                <span class="text-[10px] font-bold text-orange-500">{{ pending_withdrawals_count }} Payouts</span>
+            </div>
+        </a>
+
+        <div class="bg-[#0F172A] border border-white/5 p-6 rounded-3xl flex items-center justify-center">
+            <div class="text-center">
+                <p class="text-[8px] text-gray-600 font-black uppercase tracking-widest mb-1">System Status</p>
+                <p class="text-xs font-black text-[#A2F625] flex items-center gap-2 tracking-tighter">
+                    <span class="relative flex h-1.5 w-1.5">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#A2F625] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#A2F625]"></span>
+                    </span>
+                    SECURE & LIVE
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mt-10">
+        <!-- Recent Raffles -->
+        <div class="bg-[#0F172A] border border-white/10 rounded-[3rem] p-10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-8">
+                <span class="text-4xl opacity-5">🎟️</span>
+            </div>
+            <div class="flex justify-between items-center mb-8 relative z-10">
+                <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">Campaign Stream</h3>
+                <a href="{% url 'accounts:admin_raffle_list' %}"
+                    class="text-[#A2F625] text-[10px] font-black uppercase tracking-widest border-b border-[#A2F625] pb-1 hover:text-white hover:border-white transition">Audit
+                    All</a>
+            </div>
+            <div class="space-y-4 relative z-10">
+                {% for raffle in recent_raffles %}
+                <div
+                    class="flex items-center justify-between bg-white/[0.03] p-6 rounded-[2rem] border border-white/5 group hover:bg-[#A2F625]/5 hover:border-[#A2F625]/20 transition">
+                    <div>
+                        <p class="text-white font-bold group-hover:text-[#A2F625] transition">{{ raffle.title }}</p>
+                        <p class="text-[10px] text-gray-500 italic mt-1">{{ raffle.organizer.email }}</p>
+                    </div>
+                    {% if not raffle.is_approved %}
+                    <a href="{% url 'accounts:admin_raffle_list' %}"
+                        class="bg-[#A2F625] text-black text-[9px] font-black uppercase px-5 py-2.5 rounded-xl hover:scale-105 transition shadow-lg shadow-[#A2F625]/20">Review</a>
+                    {% else %}
+                    <span
+                        class="text-[9px] font-black uppercase text-blue-400 px-4 py-2 border border-blue-400/20 rounded-xl">Live</span>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="text-center py-20 opacity-30 italic">No campaign activity.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Payout Requests -->
+        <div class="bg-[#0F172A] border border-white/10 rounded-[3rem] p-10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-8">
+                <span class="text-4xl opacity-5">🏦</span>
+            </div>
+            <div class="flex justify-between items-center mb-8 relative z-10">
+                <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">Financial Requests</h3>
+                <a href="{% url 'accounts:admin_withdrawal_list' %}"
+                    class="text-orange-500 text-[10px] font-black uppercase tracking-widest border-b border-orange-500 pb-1 hover:text-white hover:border-white transition">Ledger
+                    View</a>
+            </div>
+            <div class="space-y-4 relative z-10">
+                {% for w in recent_withdrawals %}
+                <div
+                    class="flex items-center justify-between bg-white/[0.03] p-6 rounded-[2rem] border border-white/5 hover:border-orange-500/20 transition">
+                    <div>
+                        <p class="text-white font-black text-lg">₦{{ w.amount|floatformat:2 }}</p>
+                        <p class="text-[10px] text-gray-500 mt-1">{{ w.user.email }}</p>
+                    </div>
+                    <span
+                        class="text-[9px] font-black uppercase px-4 py-2 rounded-xl {% if w.status == 'pending' %}bg-orange-500/10 text-orange-500 border border-orange-500/20{% else %}bg-gray-500/10 text-gray-500 border border-white/5{% endif %}">
+                        {{ w.status }}
+                    </span>
+                </div>
+                {% empty %}
+                <div class="text-center py-20 opacity-30 italic">No withdrawal requests.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Monitor -->
+    <div class="mt-12 bg-white/[0.02] border border-white/5 rounded-[4rem] p-12">
+        <div class="flex items-center gap-4 mb-8">
+            <span class="text-2xl">🛡️</span>
+            <h3 class="text-2xl font-black text-white italic uppercase tracking-tighter">Security Monitor</h3>
+            <div class="h-[1px] flex-grow bg-white/5"></div>
+            <a href="{% url 'accounts:admin_audit_log' %}"
+                class="text-xs font-black uppercase tracking-widest text-gray-500 hover:text-white transition">View Full
+                Logs</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-[#0F172A] p-8 rounded-[3rem] border border-white/5">
+                <p class="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-6">Recent System Events</p>
+                <div class="space-y-4">
+                    {% for log in recent_audit_logs %}
+                    <div class="flex items-start gap-4 pb-4 border-b border-white/[0.03] last:border-0">
+                        <div
+                            class="w-1.5 h-1.5 rounded-full mt-2 {% if 'AUTH' in log.action %}bg-blue-500 animate-pulse{% elif 'DELETED' in log.action %}bg-red-500{% else %}bg-[#A2F625]{% endif %}">
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-white">{{ log.description }}</p>
+                            <p class="text-[10px] text-gray-600 mt-1">{{ log.created_at|timesince }} ago • IP: {{ log.ip_address }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div
+                class="flex flex-col justify-center p-8 bg-gradient-to-br from-[#A2F625]/5 to-transparent rounded-[3rem] border border-[#A2F625]/10">
+                <h4 class="text-xl font-black text-white italic uppercase mb-4">Integrity Protection</h4>
+                <p class="text-sm text-gray-400 font-medium leading-relaxed">Platform-wide encryption and audit logging
+                    are active. Every administrative action is recorded and mapped to a unique IP address for full
+                    accountability.</p>
+                <div class="mt-8 flex gap-4">
+                    <div class="bg-black/40 px-6 py-4 rounded-2xl border border-white/5">
+                        <p class="text-[8px] font-black text-gray-600 uppercase mb-1">Total Logs</p>
+                        <p class="text-lg font-black text-white">4,281</p>
+                    </div>
+                    <div class="bg-black/40 px-6 py-4 rounded-2xl border border-white/5">
+                        <p class="text-[8px] font-black text-gray-600 uppercase mb-1">Threats Blocked</p>
+                        <p class="text-lg font-black text-[#A2F625]">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

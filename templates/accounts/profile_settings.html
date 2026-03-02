@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile Settings - Raffle System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#0A0D14] pt-24 pb-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="mb-8">
+            <h1 class="text-3xl font-black text-white tracking-tighter">Profile Settings</h1>
+            <p class="text-gray-400 mt-2">Manage your account details and security preferences.</p>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div
+            class="mb-6 p-4 rounded-xl {% if message.tags == 'success' %}bg-[#A2F625]/10 border border-[#A2F625]/50 text-[#A2F625]{% else %}bg-red-500/10 border border-red-500/50 text-red-500{% endif %} flex items-center gap-3">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <p class="text-sm font-medium">{{ message }}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Sidebar Navigation (Optional for future expansion) -->
+            <div class="lg:col-span-1 space-y-2">
+                <a href="#personal-info"
+                    class="block bg-[#111827] border border-gray-800 hover:border-gray-700 text-white rounded-2xl p-4 transition">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <span class="font-semibold">Personal Info & Bank</span>
+                    </div>
+                </a>
+                <a href="#security"
+                    class="block bg-transparent hover:bg-[#111827] border border-transparent hover:border-gray-800 text-gray-400 hover:text-white rounded-2xl p-4 transition">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                            </path>
+                        </svg>
+                        <span class="font-semibold">Security Settings</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Content Area -->
+            <div class="lg:col-span-2 space-y-8">
+
+                <!-- Personal Info & Bank Details -->
+                <div id="personal-info"
+                    class="bg-[#111827] border border-gray-800 rounded-3xl p-6 md:p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#A2F625]/5 rounded-full blur-2xl -mr-10 -mt-10">
+                    </div>
+                    <h2 class="text-xl font-bold text-white mb-6">Personal & Bank Details</h2>
+
+                    <form method="POST" action="{% url 'accounts:profile_settings' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_profile">
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Email Address
+                                    (Read-only)</label>
+                                <input type="email" value="{{ user.email }}" disabled
+                                    class="w-full bg-black/40 border border-white/10 text-gray-500 px-6 py-4 rounded-2xl cursor-not-allowed">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Full Name</label>
+                                {{ profile_form.full_name }}
+                                {% if profile_form.full_name.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                    profile_form.full_name.errors.0 }}</p>{% endif %}
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">Phone Number</label>
+                                {{ profile_form.phone_number }}
+                                {% if profile_form.phone_number.errors %}<p class="text-red-500 text-xs mt-1">{{
+                                    profile_form.phone_number.errors.0 }}</p>{% endif %}
+                            </div>
+
+                            {% if user.role == 'organizer' %}
+                            <div class="pt-6 border-t border-gray-800 mt-6">
+                                <h3 class="text-lg font-bold text-white mb-4">Saved Bank Details (For Withdrawals)</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-400 mb-2">Bank Name</label>
+                                        {{ profile_form.bank_name }}
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-400 mb-2">Account
+                                            Number</label>
+                                        {{ profile_form.account_number }}
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-400 mb-2">Account
+                                            Name</label>
+                                        {{ profile_form.account_name }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit"
+                            class="mt-8 w-full bg-[#A2F625] text-black font-black py-4 px-6 rounded-2xl hover:bg-[#8CD81B] transition-all transform hover:scale-[1.02] shadow-[0_0_20px_rgba(162,246,37,0.3)]">
+                            Save Profile Changes
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Security -->
+                <div id="security" class="bg-[#111827] border border-gray-800 rounded-3xl p-6 md:p-8">
+                    <h2 class="text-xl font-bold text-white mb-6">Security Settings</h2>
+
+                    <form method="POST" action="{% url 'accounts:profile_settings' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="change_password">
+
+                        <div class="space-y-4">
+                            {% for field in password_form %}
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-400 mb-2">{{ field.label }}</label>
+                                <input type="password" name="{{ field.html_name }}"
+                                    class="w-full bg-black/40 border border-white/10 text-white px-6 py-4 rounded-2xl outline-none focus:border-[#A2F625] transition font-medium">
+                                {% if field.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+                                {% endif %}
+                                {% if field.help_text %}
+                                <p class="text-xs text-gray-600 mt-1">{{ field.help_text|safe }}</p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+
+                            {% if password_form.non_field_errors %}
+                            <div class="p-3 bg-red-500/10 border border-red-500/50 rounded-xl">
+                                <p class="text-red-500 text-xs">{{ password_form.non_field_errors.0 }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit"
+                            class="mt-8 w-full bg-white text-black font-black py-4 px-6 rounded-2xl hover:bg-gray-200 transition-all">
+                            Update Password
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple smooth scrolling for sidebar links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+            // Update active state visual (very simple version)
+            document.querySelectorAll('.lg\\:col-span-1 a').forEach(a => {
+                a.classList.remove('bg-[#111827]', 'border-gray-800', 'text-white');
+                a.classList.add('bg-transparent', 'border-transparent', 'text-gray-400');
+            });
+            this.classList.add('bg-[#111827]', 'border-gray-800', 'text-white');
+            this.classList.remove('bg-transparent', 'border-transparent', 'text-gray-400');
+        });
+    });
+</script>
+{% endblock %}

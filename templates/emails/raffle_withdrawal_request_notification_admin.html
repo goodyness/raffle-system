@@ -1,0 +1,42 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2 style="margin: 0; color: #4f46e5; font-size: 22px; text-align: center; margin-bottom: 20px;">Withdrawal Request</h2>
+
+<p style="font-size: 16px; color: #374151; margin-bottom: 20px;">
+    Hello Admin,
+</p>
+
+<p style="font-size: 15px; color: #374151; margin-bottom: 16px;">
+    A new withdrawal request of <strong>₦{{ withdrawal.amount }}</strong> has been submitted by <strong>{{
+        withdrawal.user.full_name }}</strong>.
+</p>
+
+<table width="100%" cellpadding="10" cellspacing="0"
+    style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; margin: 20px 0;">
+    <tr>
+        <td style="font-weight: bold; color: #374151;">Amount:</td>
+        <td style="color: #10b981;">₦{{ withdrawal.amount }}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; color: #374151;">Bank:</td>
+        <td>{{ withdrawal.bank_name }}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; color: #374151;">Account Number:</td>
+        <td>{{ withdrawal.account_number }}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; color: #374151;">Account Name:</td>
+        <td>{{ withdrawal.account_name }}</td>
+    </tr>
+    <tr>
+        <td style="font-weight: bold; color: #374151;">Date:</td>
+        <td>{{ withdrawal.requested_at|date:"Y-m-d H:i" }}</td>
+    </tr>
+</table>
+
+<p style="font-size: 15px; color: #6b7280; margin-bottom: 30px;">
+    Please log in to the admin panel to process this request.
+</p>
+{% endblock %}

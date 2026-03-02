@@ -1,0 +1,22 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<div style="text-align: center;">
+    <h1 style="color: #A2F625;">GOOD NEWS! 🎉</h1>
+    <p>Hello <strong>{{ organizer.full_name|default:organizer.username }}</strong>,</p>
+    <p>We are excited to inform you that your Raffle <strong>"{{ raffle.title }}"</strong> has been **APPROVED** by our
+        administrators.</p>
+
+    <div style="background: #f0fff0; border: 2px solid #A2F625; border-radius: 12px; padding: 25px; margin: 20px 0;">
+        <p style="margin: 0; font-weight: bold; color: #111D22;">Your Raffle is now LIVE!</p>
+        <p style="font-size: 14px; color: #666; margin-top: 10px;">Participants can now join and pay for entries on the
+            public platform.</p>
+    </div>
+
+    <p>Start promoting your Raffle link now to reach your target of {{ raffle.target_participants }} participants!</p>
+
+    <a href="{{ BASE_URL }}/raffle/{{ raffle.custom_id }}/"
+        style="display: inline-block; padding: 15px 30px; background-color: #A2F625; color: #111D22; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 25px;">View
+        Live Raffle</a>
+</div>
+{% endblock %}

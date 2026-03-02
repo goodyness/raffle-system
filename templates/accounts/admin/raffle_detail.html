@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Raffle Detail | Admin Control{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 mt-20">
+    <div class="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
+        <div>
+            <div class="flex items-center gap-3 mb-4">
+                <a href="{% url 'accounts:admin_raffle_list' %}"
+                    class="text-[#A2F625] text-[10px] font-black uppercase hover:underline">← Back to List</a>
+                <span class="text-gray-600 text-[10px] font-black">/</span>
+                <span class="text-gray-400 text-[10px] font-black uppercase">{{ raffle.custom_id }}</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white mb-4">{{ raffle.title }}</h1>
+            <div class="flex flex-wrap gap-3">
+                <span
+                    class="px-4 py-1.5 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-widest text-[#A2F625]">
+                    {{ raffle.get_status_display }}
+                </span>
+                {% if raffle.is_revoked %}
+                <span
+                    class="px-4 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-[10px] font-black uppercase tracking-widest text-red-500">
+                    ⚠ REVOKED
+                </span>
+                {% elif raffle.is_approved %}
+                <span
+                    class="px-4 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-[10px] font-black uppercase tracking-widest text-blue-400">
+                    ✓ APPROVED
+                </span>
+                {% else %}
+                <span
+                    class="px-4 py-1.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-[10px] font-black uppercase tracking-widest text-orange-500">
+                    ⌛ PENDING
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="flex gap-4">
+            {% if raffle.is_revoked %}
+            <form action="{% url 'accounts:revoke_raffle' raffle.custom_id %}" method="post">
+                {% csrf_token %}
+                <button type="submit"
+                    class="bg-[#A2F625] hover:bg-white text-black px-8 py-4 rounded-2xl font-black uppercase tracking-tighter transition shadow-xl shadow-[#A2F625]/20">
+                    Release Raffle
+                </button>
+            </form>
+            {% else %}
+            <button onclick="document.getElementById('revokeModal').classList.remove('hidden')"
+                class="bg-red-500 hover:bg-white text-black px-8 py-4 rounded-2xl font-black uppercase tracking-tighter transition shadow-xl shadow-red-500/20">
+                Revoke Raffle
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <div class="bg-[#0F172A] border border-white/5 p-8 rounded-[2rem]">
+            <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Total Participants</p>
+            <p class="text-3xl font-black text-white">{{ raffle.tickets.count }} <span class="text-xs text-gray-600">/
+                    {{ raffle.target_participants }}</span></p>
+        </div>
+        <div class="bg-[#0F172A] border border-white/5 p-8 rounded-[2rem]">
+            <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Revenue Generated</p>
+            <p class="text-3xl font-black text-[#A2F625]">₦{{ raffle.paid_count|add:0|floatformat:2 }}</p>
+            <p class="text-[9px] text-gray-600 mt-1 italic">Based on ticket price: ₦{{ raffle.price }}</p>
+        </div>
+        <div class="bg-[#0F172A] border border-white/5 p-8 rounded-[2rem]">
+            <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Organizer</p>
+            <p class="text-sm font-bold text-white mb-1 truncate">{{ raffle.organizer.full_name }}</p>
+            <p class="text-[10px] text-gray-600 font-mono">{{ raffle.organizer.email }}</p>
+        </div>
+        <div class="bg-[#0F172A] border border-white/5 p-8 rounded-[2rem]">
+            <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Draw Goal</p>
+            <p class="text-sm font-bold text-white">{{ raffle.end_datetime|date:"M d, Y H:i" }}</p>
+            <p class="text-[10px] text-gray-600 mt-1">{{ raffle.num_winners }} Lucky Winner{{ raffle.num_winners|pluralize }}</p>
+        </div>
+    </div>
+
+    {% if raffle.is_revoked %}
+    <div class="bg-red-500/10 border border-red-500/20 p-8 rounded-[2rem] mb-12">
+        <h3 class="text-red-500 font-black uppercase text-xs mb-3">Revocation Reason:</h3>
+        <p class="text-gray-300 text-sm italic">{{ raffle.revocation_reason }}</p>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <!-- Ticket Entries -->
+        <div class="lg:col-span-2 bg-[#0F172A] border border-white/5 rounded-[3rem] overflow-hidden shadow-xl">
+            <div class="px-8 py-6 bg-white/[0.02] border-b border-white/5 flex justify-between items-center">
+                <h3 class="text-lg font-black text-white italic uppercase">Participant Ledger</h3>
+                <span class="text-[10px] text-gray-500 font-black">{{ raffle.tickets.count }} Entries</span>
+            </div>
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-gray-500 border-b border-white/5 text-[9px] uppercase font-black tracking-widest">
+                        <th class="px-8 py-4">Participant</th>
+                        <th class="px-8 py-4">Ticket ID</th>
+                        <th class="px-8 py-4">Date</th>
+                        <th class="px-8 py-4 text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for t in tickets %}
+                    <tr class="group hover:bg-white/[0.01] transition">
+                        <td class="px-8 py-4">
+                            <p class="text-white text-xs font-bold">{{ t.name }}</p>
+                            <p class="text-[9px] text-gray-600 font-mono">{{ t.email }}</p>
+                        </td>
+                        <td class="px-8 py-4 text-[10px] text-gray-400 font-mono">{{ t.ticket_number }}</td>
+                        <td class="px-8 py-4 text-[10px] text-gray-600">{{ t.purchased_at|date:"M d, H:i" }}</td>
+                        <td class="px-8 py-4 text-right">
+                            {% if t.is_winner %}
+                            <span class="text-[9px] font-black uppercase text-[#A2F625]">WINNER</span>
+                            {% elif t.is_paid %}
+                            <span class="text-[9px] font-black uppercase text-blue-400">PAID</span>
+                            {% else %}
+                            <span class="text-[9px] font-black uppercase text-gray-600">UNPAID</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-8 py-10 text-center text-gray-600 italic text-xs">No entries found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if tickets.has_other_pages %}
+            <div class="px-8 py-4 bg-white/[0.02] border-t border-white/5 flex items-center justify-center gap-4">
+                {% if tickets.has_previous %}
+                <a href="?page={{ tickets.previous_page_number }}"
+                    class="text-gray-500 hover:text-white text-[10px] font-black uppercase">Prev</a>
+                {% endif %}
+                <span class="text-[#A2F625] font-black text-[10px]">{{ tickets.number }} / {{
+                    tickets.paginator.num_pages }}</span>
+                {% if tickets.has_next %}
+                <a href="?page={{ tickets.next_page_number }}"
+                    class="text-gray-500 hover:text-white text-[10px] font-black uppercase">Next</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Info Sidebar -->
+        <div class="space-y-8">
+            <div class="bg-[#0F172A] border border-white/5 rounded-[2.5rem] p-8">
+                <h3 class="text-sm font-black text-white italic uppercase mb-6">Technical Details</h3>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Participants Hash
+                        </p>
+                        <p
+                            class="text-[10px] text-white font-mono break-all bg-black/40 p-3 rounded-xl border border-white/5">
+                            {{ raffle.participants_hash|default:"Not hashed yet" }}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Seed Entropy</p>
+                        <p
+                            class="text-[10px] text-white font-mono break-all bg-black/40 p-3 rounded-xl border border-white/5">
+                            {{ raffle.external_seed|default:"Not drawn yet" }}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Raffle Creation
+                        </p>
+                        <p class="text-[10px] text-gray-400 font-medium">{{ raffle.created_at|date:"F d, Y @ H:i:s" }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {% if raffle.image %}
+            <div class="bg-[#0F172A] border border-white/5 rounded-[2.5rem] overflow-hidden">
+                <p class="p-8 pb-4 text-[9px] text-gray-500 font-black uppercase tracking-widest">Campaign Visual</p>
+                <img src="{{ raffle.image.url }}"
+                    class="w-full h-48 object-cover opacity-60 hover:opacity-100 transition duration-500">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- REVOKE MODAL -->
+<div id="revokeModal"
+    class="hidden fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-6 backdrop-blur-xl">
+    <div class="bg-[#0F172A] border border-red-500/30 rounded-[3rem] max-w-md w-full p-10 shadow-2xl">
+        <h2 class="text-3xl font-black text-white italic uppercase mb-4">Confirm Revocation</h2>
+        <p class="text-gray-400 text-xs leading-relaxed mb-8">
+            Revoking this raffle will pause all activities, hide it from public browse, and prevent further ticket
+            sales.
+        </p>
+
+        <form action="{% url 'accounts:revoke_raffle' raffle.custom_id %}" method="post" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label class="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3">Reason for
+                    Revocation</label>
+                <textarea name="reason" rows="3" required
+                    class="w-full bg-black/40 border border-white/10 text-white p-4 rounded-2xl outline-none focus:border-red-500 transition text-sm italic placeholder:text-gray-800"
+                    placeholder="e.g. Suspicious activity detected, scam suspected..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 pt-4">
+                <button type="button" onclick="document.getElementById('revokeModal').classList.add('hidden')"
+                    class="bg-white/5 text-gray-400 font-black py-4 rounded-2xl hover:bg-white/10 transition uppercase text-[10px]">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="bg-red-500 text-black font-black py-4 rounded-2xl hover:bg-white transition uppercase text-[10px] tracking-tighter">
+                    Revoke Now
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Email | Raffle System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#0A0F12] py-20 px-4">
+    <div class="max-w-md w-full bg-[#0F172A] border border-white/5 rounded-[3rem] p-12 shadow-2xl animate-fade-in-up">
+
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-black italic uppercase tracking-tighter text-white mb-2">Check Your Inbox</h1>
+            <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest break-words px-4">Code sent to {{ email }}</p>
+        </div>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest">6-Digit
+                        Code</label>
+                    <input type="text" name="code" maxlength="6" required autofocus
+                        class="w-full bg-black/40 border border-white/10 text-white px-6 py-4 rounded-2xl outline-none focus:border-[#A2F625] transition font-mono text-2xl text-center tracking-widest">
+                </div>
+            </div>
+
+            <button type="submit"
+                class="w-full bg-[#A2F625] text-black font-black uppercase tracking-tighter py-5 rounded-2xl hover:bg-white transition-all transform active:scale-95 shadow-xl shadow-[#A2F625]/10 mt-6">
+                Verify Account →
+            </button>
+        </form>
+
+        <div class="mt-10 text-center">
+            <p class="text-gray-600 text-[10px] font-black uppercase tracking-widest">Didn't receive the code?</p>
+            <button class="text-gray-400 hover:text-white transition text-xs font-bold mt-2 inline-block">Resend
+                Code</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+</style>
+{% endblock %}

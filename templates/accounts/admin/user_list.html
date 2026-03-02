@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}User Management | Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 mt-20">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div>
+            <h1 class="text-4xl font-black italic uppercase tracking-tighter text-white">Users Management</h1>
+            <p class="text-gray-500 text-sm mt-1">Manage all registered participants and organizers.</p>
+        </div>
+
+        <form method="get" class="flex items-center gap-3">
+            <div class="relative">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search email or name..."
+                    class="bg-[#0F172A] border border-white/10 text-white pl-10 pr-4 py-3 rounded-xl text-xs outline-none focus:border-[#A2F625] transition w-64">
+                <svg class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <select name="role" onchange="this.form.submit()"
+                class="bg-[#0F172A] border border-white/10 text-white px-4 py-3 rounded-xl text-xs outline-none">
+                <option value="">All Roles</option>
+                <option value="participant" {% if role_filter == 'participant' %}selected{% endif %}>Participants</option>
+                <option value="organizer" {% if role_filter == 'organizer' %}selected{% endif %}>Organizers</option>
+                <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Admins</option>
+            </select>
+            {% if query or role_filter %}
+            <a href="?" class="text-red-500 text-[10px] font-black uppercase hover:text-white transition">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- User Table -->
+    <div class="bg-[#0F172A] border border-white/5 rounded-[3rem] overflow-hidden shadow-xl">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr
+                    class="text-gray-500 border-b border-white/5 text-[10px] uppercase font-black tracking-widest bg-white/[0.02]">
+                    <th class="px-8 py-6">User Details</th>
+                    <th class="px-8 py-6">Role</th>
+                    <th class="px-8 py-6">Status</th>
+                    <th class="px-8 py-6">Joined</th>
+                    <th class="px-8 py-6 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+                {% for u in users %}
+                <tr class="group hover:bg-white/[0.01] transition">
+                    <td class="px-8 py-6">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gradient-to-br from-[#1E293B] to-black border border-white/10 flex items-center justify-center text-xs font-black text-white">
+                                {{ u.full_name|slice:":1" }}
+                            </div>
+                            <div>
+                                <p class="text-white font-bold text-sm">{{ u.full_name }}</p>
+                                <p class="text-[10px] text-gray-500 font-mono">{{ u.email }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-8 py-6">
+                        <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest 
+                            {% if u.role == 'admin' %}bg-purple-500/10 text-purple-400
+                            {% elif u.role == 'organizer' %}bg-blue-500/10 text-blue-400
+                            {% else %}bg-gray-500/10 text-gray-400{% endif %}">
+                            {{ u.role }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-6">
+                        <div class="flex flex-col gap-1">
+                            {% if u.is_suspended %}
+                            <span class="text-[9px] font-black uppercase text-red-500 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Suspended
+                            </span>
+                            {% else %}
+                            <span class="text-[9px] font-black uppercase text-[#A2F625] flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#A2F625]"></span> Active
+                            </span>
+                            {% endif %}
+
+                            {% if u.role == 'organizer' %}
+                            {% if u.is_verified %}
+                            <span class="text-[8px] font-bold uppercase text-blue-400">✓ Approved Organizer</span>
+                            {% else %}
+                            <span class="text-[8px] font-bold uppercase text-orange-500">⚠ Pending Approval</span>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-8 py-6 text-[10px] text-gray-500 font-medium">
+                        {{ u.date_joined|date:"M d, Y" }}
+                    </td>
+                    <td class="px-8 py-6 text-right">
+                        <div class="flex justify-end gap-2">
+                            {% if u.role == 'organizer' %}
+                            <a href="{% url 'accounts:toggle_organizer_approval' u.id %}"
+                                class="p-2 bg-blue-500/10 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition title="
+                                Toggle Approval">
+                                {% if u.is_verified %}Revoke{% else %}Approve{% endif %}
+                            </a>
+                            {% endif %}
+
+                            <a href="{% url 'accounts:toggle_user_suspension' u.id %}"
+                                class="p-2 {% if u.is_suspended %}bg-[#A2F625]/10 text-[#A2F625]{% else %}bg-orange-500/10 text-orange-400{% endif %} rounded-lg hover:opacity-80 transition"
+                                title="Toggle Suspension">
+                                {% if u.is_suspended %}Release{% else %}Suspend{% endif %}
+                            </a>
+
+                            <button onclick="confirmDelete('{{ u.id }}', '{{ u.email|escapejs }}')"
+                                class="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5"
+                        class="px-8 py-20 text-center text-gray-600 italic uppercase font-black tracking-widest text-xs">
+                        No users found matching your criteria.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if users.has_other_pages %}
+        <div class="px-8 py-6 bg-white/[0.02] border-t border-white/5 flex items-center justify-center gap-4">
+            {% if users.has_previous %}
+            <a href="?page={{ users.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}"
+                class="text-gray-500 hover:text-white text-xs font-black uppercase transition">Prev</a>
+            {% endif %}
+
+            <span class="text-[#A2F625] font-black text-xs">{{ users.number }} / {{ users.paginator.num_pages }}</span>
+
+            {% if users.has_next %}
+            <a href="?page={{ users.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}"
+                class="text-gray-500 hover:text-white text-xs font-black uppercase transition">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function confirmDelete(userId, email) {
+        if (confirm(`ARE YOU SURE? This will permanently delete user ${email} and all their data.`)) {
+            window.location.href = `/accounts/manage/users/${userId}/delete/`;
+        }
+    }
+</script>
+{% endblock %}

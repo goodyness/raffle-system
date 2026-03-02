@@ -1,0 +1,22 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<div style="text-align: center;">
+    <h1 style="color: #f87171;">UPDATE ON RAFFLE 📋</h1>
+    <p>Hello <strong>{{ organizer.full_name|default:organizer.username }}</strong>,</p>
+    <p>We are writing to inform you that your Raffle <strong>"{{ raffle.title }}"</strong> was not approved for listing
+        on our platform at this time.</p>
+
+    <div style="background: #fff5f5; border: 2px solid #f87171; border-radius: 12px; padding: 25px; margin: 20px 0;">
+        <p style="margin: 0; font-weight: bold; color: #b91c1c;">Status: Not Approved / Declined</p>
+        <p style="font-size: 14px; color: #666; margin-top: 10px;">Common reasons include incomplete details,
+            non-compliant descriptions, or suspicious content.</p>
+    </div>
+
+    <p>If you believe this was a mistake or have updated your Raffle details, please reach out to our support team.</p>
+
+    <a href="{{ BASE_URL }}/raffle/organizer/raffles/"
+        style="display: inline-block; padding: 12px 24px; background-color: #111D22; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 25px;">Go
+        to Dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Referral Breakdown | Raffle System{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-12 px-4 mt-20">
+    <div class="mb-12">
+        <a href="{% url 'raffle:registrar_raffle_dashboard' %}"
+            class="text-gray-500 hover:text-[#A2F625] font-black uppercase text-[10px] tracking-widest flex items-center gap-2 transition">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <!-- HEADER STATS -->
+    <div
+        class="bg-[#0F172A] border border-white/5 text-white rounded-[2rem] p-10 shadow-2xl relative overflow-hidden mb-12">
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px]"></div>
+
+        <div class="relative z-10 grid md:grid-cols-2 gap-8 items-center">
+            <div>
+                <h1 class="text-4xl font-black italic uppercase tracking-tighter mb-2">Partnership Earnings</h1>
+                <p class="text-gray-400">Tracking your commissions from referred raffle organizers.</p>
+            </div>
+            <div class="bg-white/5 p-8 rounded-2xl border border-white/10 text-center">
+                <p class="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-2">Total Referral Commission
+                </p>
+                <h2 class="text-5xl font-black text-white">₦{{ total_earned|floatformat:2 }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- REFERRED CAMPAIGNS -->
+    <div class="bg-[#0F172A] border border-white/5 p-10 rounded-[2rem] shadow-xl">
+        <h3 class="text-2xl font-black text-white italic uppercase mb-8 flex items-center gap-3">
+            <span class="text-blue-400">/</span> Referred Campaigns
+        </h3>
+
+        <div class="overflow-hidden">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="text-gray-500 border-b border-white/5 text-[10px] uppercase font-black tracking-widest">
+                        <th class="pb-6">Campaign</th>
+                        <th class="pb-6">Organizer</th>
+                        <th class="pb-6">Status</th>
+                        <th class="pb-6">Total Loss</th>
+                        <th class="pb-6 text-right">Your Share (4%)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    {% for raffle in referred_raffles %}
+                    <tr class="group hover:bg-white/[0.02] transition">
+                        <td class="py-6">
+                            <p class="font-bold text-white uppercase">{{ raffle.title }}</p>
+                            <span class="text-[10px] text-gray-500 font-mono">{{ raffle.custom_id }}</span>
+                        </td>
+                        <td class="py-6 text-gray-400 font-medium">
+                            {{ raffle.organizer.full_name }}
+                        </td>
+                        <td class="py-6">
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest 
+                                {% if raffle.status == 'ended' %}bg-green-500/10 text-green-400
+                                {% else %}bg-amber-500/10 text-amber-500{% endif %}">
+                                {{ raffle.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="py-6 text-gray-400">
+                            {% if raffle.status == 'ended' and raffle.analytics %}
+                            ₦{{ raffle.analytics.total_loss|floatformat:2 }}
+                            {% else %}
+                            <span class="italic text-gray-600">Pending Draw</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-6 text-right">
+                            {% if raffle.status == 'ended' and raffle.analytics %}
+                            <p class="text-blue-400 font-black text-lg">₦{{ raffle.analytics.partner_share|floatformat:2 }}</p>
+                            {% else %}
+                            <span class="text-gray-600">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="py-20 text-center">
+                            <p class="text-gray-500 font-bold uppercase tracking-widest mb-4">No Referrals Tracked Yet
+                            </p>
+                            <p class="text-[10px] text-gray-600 max-w-xs mx-auto">Share your referral code <span
+                                    class="text-white">({{ profile.referral_code }})</span> with other organizers to
+                                earn 10% of the platform share on their raffles.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

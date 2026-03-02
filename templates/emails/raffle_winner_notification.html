@@ -1,0 +1,100 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<div style="text-align: center;">
+
+    <h1 style="color: #111D22; font-size: 32px; font-weight: 900; margin-bottom: 10px;">
+        CONGRATULATIONS! 🥳
+    </h1>
+
+    <p style="font-size: 18px; color: #555;">
+        Hello <strong>{{ ticket.name }}</strong>,
+    </p>
+
+    <p style="color: #666; font-size: 16px; line-height: 1.6;">
+        You have been selected as a winner in the <strong>{{ raffle.title }}</strong> Raffle.
+        Your luck has truly paid off!
+    </p>
+
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; margin: 32px 0;">
+        <p style="margin: 0; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.1em; font-size: 12px;">
+            Your Payout Amount
+        </p>
+
+        <div style="font-size: 56px; font-weight: 900; color: #A2F625; margin: 12px 0;">
+            ₦{{ amount_won|floatformat:2 }}
+        </div>
+
+        <p style="color: #94a3b8; font-size: 13px;">
+            Winning Ticket:
+            <strong style="color: #1e293b; font-family: monospace; background: #fff; padding: 4px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                {{ ticket.ticket_number }}
+            </strong>
+        </p>
+    </div>
+
+    <div style="text-align: left; background: #fff; border: 1px solid #f1f5f9; border-radius: 20px; padding: 25px; margin-bottom: 32px;">
+
+        <h3 style="font-size: 16px; font-weight: 800; color: #1e293b; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #A2F625; display: inline-block;">
+            HOW TO CLAIM YOUR PAYOUT
+        </h3>
+
+        {% if has_account %}
+            <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                Great news! Your winnings of <strong>₦{{ amount_won|floatformat:2 }}</strong>
+                have been automatically credited to your secure raffle wallet.
+                Simply log in to your dashboard to initiate a withdrawal to your bank account.
+            </p>
+        {% else %}
+            <p style="color: #475569; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                To claim your winnings, please <strong>create a participant account</strong>
+                using this email address ({{ ticket.email }}).
+                Once your account is verified, your
+                <strong>₦{{ amount_won|floatformat:2 }}</strong>
+                prize will be waiting in your wallet, ready for immediate withdrawal.
+            </p>
+        {% endif %}
+
+        <div style="display: grid; gap: 15px;">
+
+            <div style="padding: 12px; background: #f8fafc; border-radius: 12px;">
+                <p style="margin: 0; font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">
+                    Raffle Host
+                </p>
+
+                <p style="margin: 5px 0 0; color: #1e293b; font-weight: 700;">
+                    {{ organizer.full_name }}
+                </p>
+
+                <p style="margin: 2px 0 0; font-size: 13px; color: #64748b;">
+                    {{ organizer.email }}
+                    {% if organizer.phone_number %}
+                        | {{ organizer.phone_number }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div style="padding: 12px; background: #f8fafc; border-radius: 12px; margin-top: 10px;">
+                <p style="margin: 0; font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">
+                    System Admin
+                </p>
+
+                <p style="margin: 5px 0 0; color: #1e293b; font-weight: 700;">
+                    Support Team
+                </p>
+
+                <p style="margin: 2px 0 0; font-size: 13px; color: #64748b;">
+                    {{ admin_email }}
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <a href="{{ BASE_URL }}"
+       style="display: inline-block; padding: 18px 40px; background-color: #A2F625; color: #111D22; text-decoration: none; border-radius: 16px; font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">
+        View on Dashboard
+    </a>
+
+</div>
+{% endblock %}

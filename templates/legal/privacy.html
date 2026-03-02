@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Privacy Policy - Raffle System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#0A0D14] pt-24 pb-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-[#111827] border border-gray-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+
+            <h1 class="text-3xl md:text-5xl font-black text-white mb-6 tracking-tighter relative z-10">Privacy <span
+                    class="text-blue-500">Policy</span></h1>
+            <p class="text-gray-400 mb-10 text-sm md:text-base border-b border-gray-800 pb-6 relative z-10">
+                Last Updated: {% now "F j, Y" %}
+            </p>
+
+            <div class="space-y-8 text-gray-300 font-light leading-relaxed relative z-10">
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">1. Information We Collect</h2>
+                    <p>We believe in transparent data collection. We collect only what is strictly necessary to operate
+                        the platform securely and legally.</p>
+                    <ul class="list-disc pl-5 space-y-2 mt-3">
+                        <li><strong>Account Details:</strong> Email address, secured password hashes, and user roles
+                            (organizer or participant).</li>
+                        <li><strong>Financial Records:</strong> Transaction history, ticket purchases, deposits, and
+                            withdrawal records. Note: We do not store full credit card details on our servers; payments
+                            are processed securely by our partners (Paystack & Flutterwave).</li>
+                        <li><strong>Security Logs:</strong> IP addresses and device information relative to logins and
+                            critical account actions to prevent unauthorized access.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">2. How We Use Your Information</h2>
+                    <p>Your information is primarily used to provide you with a fair and functional service:</p>
+                    <ul class="list-disc pl-5 space-y-2 mt-3">
+                        <li>Processing your ticket purchases and distributing winnings.</li>
+                        <li>Verifying your identity to send you One-Time Passwords (OTPs) and confirm sensitive actions.
+                        </li>
+                        <li>Running the provably fair winner selection algorithms accurately against eligible tickets.
+                        </li>
+                        <li>Communicating updates about campaigns you've joined, withdrawal statuses, or critical
+                            security notices.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">3. Data Security & Integrity</h2>
+                    <div class="bg-blue-500/10 border-l-4 border-blue-500 p-4 rounded-r-lg mb-3">
+                        <p class="text-blue-400 font-semibold mb-0">Commitment to Security</p>
+                    </div>
+                    <p>We prioritize the security of both your personal data and your funds. Our platform is hardened
+                        against common web vulnerabilities, utilizing atomic database transactions to guarantee
+                        financial integrity and rate-limiting to prevent brute-force attacks. However, no digital system
+                        is entirely infallible, and you must protect your login credentials.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">4. Information Sharing & Disclosure</h2>
+                    <p>We do not sell, rent, or lease your personal information to third parties. We may share necessary
+                        information with:</p>
+                    <ul class="list-disc pl-5 space-y-2 mt-3">
+                        <li><strong>Payment Processors:</strong> For the sole purpose of clearing payments and
+                            processing your withdrawals.</li>
+                        <li><strong>Legal Authorities:</strong> If required by law, subpoena, or to prevent fraudulent
+                            or illegal activity.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">5. Cookies and Tracking Technologies</h2>
+                    <p>We use essential cookies strictly to maintain your session (keeping you logged in) and to
+                        implement security mechanisms (like CSRF protection). We do not deploy invasive third-party
+                        tracking scripts across our core service pages.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">6. Changes to This Policy</h2>
+                    <p>We may update this Privacy Policy from time to time. If we make significant material changes, we
+                        will notify you either through the email address you have provided or by placing a prominent
+                        notice on our platform.</p>
+                </section>
+
+            </div>
+
+            <div class="mt-12 pt-8 border-t border-gray-800 text-center">
+                <p class="text-gray-500 text-sm">If you have any questions regarding how we handle your data, please <a
+                        href="mailto:support@raffle-system.com" class="text-blue-500 hover:underline">contact our
+                        privacy team</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

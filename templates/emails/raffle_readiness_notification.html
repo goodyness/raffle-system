@@ -1,0 +1,23 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<div style="text-align: center;">
+    <h1 style="color: #A2F625;">Action Required! 📋</h1>
+    <p>Hello <strong>{{ organizer_name }}</strong>,</p>
+    <p>Your Raffle <strong>"{{ raffle_title }}"</strong> has reached its conclusion!</p>
+
+    <div style="background: #f0f7ff; border: 2px solid #3b82f6; border-radius: 12px; padding: 25px; margin: 20px 0;">
+        <p style="margin: 0; font-weight: bold; color: #111D22;">Reason for Completion:</p>
+        <p style="font-size: 16px; color: #3b82f6; margin-top: 5px;">{{ reason }}</p>
+        <hr style="border: 0; border-top: 1px solid #d1d5db; margin: 15px 0;">
+        <p style="font-size: 14px; color: #4b5563;">Entries Collected: <strong>{{ entries_count }}</strong></p>
+    </div>
+
+    <p>It's time to reward your participants! Please log in to your dashboard to generate the lucky winners and finalize
+        the Raffle.</p>
+
+    <a href="{{ dashboard_url }}"
+        style="display: inline-block; padding: 15px 30px; background-color: #A2F625; color: #111D22; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 25px;">Go
+        to Dashboard</a>
+</div>
+{% endblock %}

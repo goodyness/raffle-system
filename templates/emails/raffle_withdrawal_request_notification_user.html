@@ -1,0 +1,22 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<div style="text-align: center;">
+    <h2 style="margin:0; color: #4f46e5;">Request Received! 📥</h2>
+    <p>Hello <strong>{{ withdrawal.user.full_name }}</strong>,</p>
+    <p>We've received your request to withdraw funds from your Raffle earnings. Our team is currently reviewing the
+        details.</p>
+
+    <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: left;">
+        <p style="margin: 5px 0;"><strong>Amount:</strong> ₦{{ withdrawal.amount }}</p>
+        <p style="margin: 5px 0;"><strong>Bank:</strong> {{ withdrawal.bank_name }}</p>
+        <p style="margin: 5px 0;"><strong>Account:</strong> {{ withdrawal.account_number }} ({{ withdrawal.account_name
+            }})</p>
+        <p style="margin: 5px 0;"><strong>Status:</strong> <span
+                style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 999px; font-size: 12px;">Processing</span>
+        </p>
+    </div>
+
+    <p>You will receive another email once your request has been approved and processed.</p>
+</div>
+{% endblock %}

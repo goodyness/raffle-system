@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Organizer Registration | Raffle System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#0A0F12] py-20 px-4">
+    <div class="max-w-md w-full bg-[#0F172A] border border-white/5 rounded-[3rem] p-12 shadow-2xl animate-fade-in-up">
+
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-black italic uppercase tracking-tighter text-white mb-2">Launch Your Raffle</h1>
+            <p class="text-gray-500 text-xs font-black uppercase tracking-[0.3em]">Become an Organizer</p>
+        </div>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div class="space-y-4">
+                {% for field in form %}
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ field.label }}</label>
+                    <div class="relative group/input">
+                        {{ field }}
+                        {% if "password" in field.name.lower %}
+                        <button type="button" onclick="togglePassword('{{ field.id_for_label }}', this)"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-[#A2F625] transition p-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 eye-icon" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% for error in field.errors %}
+                    <p class="text-red-500 text-[10px] font-bold">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit"
+                class="w-full bg-[#A2F625] text-black font-black uppercase tracking-tighter py-5 rounded-2xl hover:bg-white transition-all transform active:scale-95 shadow-xl shadow-[#A2F625]/10 mt-6">
+                Register & Verify →
+            </button>
+        </form>
+
+        <div class="mt-10 text-center">
+            <p class="text-gray-600 text-[10px] font-black uppercase tracking-widest">Already have an account?</p>
+            <a href="{% url 'accounts:login' %}"
+                class="text-gray-400 hover:text-white transition text-xs font-bold mt-2 inline-block">Login Here</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+</style>
+
+<script>
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('.eye-icon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.025 10.025 0 014.132-5.411m0 0L21 21m-14.868-6.132A3 3 0 1111.121 11.121M17.658 17.658A10.025 10.025 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411" />';
+        } else {
+            input.type = 'password';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+        }
+    }
+</script>
+{% endblock %}

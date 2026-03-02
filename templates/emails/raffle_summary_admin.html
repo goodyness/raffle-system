@@ -1,0 +1,35 @@
+{% extends "emails/base_email.html" %}
+
+{% block content %}
+<h2>Raffle Finalized 📊</h2>
+<p>Admin,</p>
+<p>The Raffle <strong>"{{ raffle.title }}"</strong> organized by <strong>{{
+        raffle.organizer.full_name|default:raffle.organizer.email }}</strong> has just been completed. Here is the
+    financial summary for the system:</p>
+
+<div style="margin: 25px 0;">
+    <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+        <span style="font-size: 12px; color: #64748b; text-transform: uppercase;">Total Revenue</span>
+        <span style="font-size: 20px; font-weight: bold; color: #0f172a; display: block;">₦{{
+            total_revenue|floatformat:2 }}</span>
+    </div>
+    <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+        <span style="font-size: 12px; color: #64748b; text-transform: uppercase;">System Profit</span>
+        <span style="font-size: 20px; font-weight: bold; color: #10b981; display: block;">₦{{ total_profit|floatformat:2
+            }}</span>
+    </div>
+    <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;">
+        <span style="font-size: 12px; color: #64748b; text-transform: uppercase;">Payout to Winners</span>
+        <span style="font-size: 20px; font-weight: bold; color: #0f172a; display: block;">₦{{
+            total_prize_pool|floatformat:2 }}</span>
+    </div>
+    <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; text-align: center;">
+        <span style="font-size: 12px; color: #64748b; text-transform: uppercase;">Winners Picked</span>
+        <span style="font-size: 20px; font-weight: bold; color: #0f172a; display: block;">{{ winners_count }}</span>
+    </div>
+</div>
+
+<p style="font-size: 14px; color: #475569;">
+    The platform profit has been recorded and will be reflected in the system accounts.
+</p>
+{% endblock %}

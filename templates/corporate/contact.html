@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Raffle System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#0A0D14] pt-24 pb-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="mb-12 text-center">
+            <h1 class="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4">Get in <span
+                    class="text-[#A2F625]">Touch</span></h1>
+            <p class="text-gray-400 max-w-xl mx-auto">
+                Have questions about running a campaign or need help resolving a withdrawal issue? Reach out to our
+                dedicated support team.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- Contact Form Area -->
+            <div class="bg-[#111827] border border-gray-800 rounded-3xl p-8 shadow-xl">
+                <form action="#" method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Your Name</label>
+                        <input type="text" name="name" required
+                            class="w-full bg-black/40 border border-white/10 text-white px-6 py-4 rounded-2xl outline-none focus:border-[#A2F625] transition font-medium"
+                            placeholder="E.g. John Doe">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Email Address</label>
+                        <input type="email" name="email" required
+                            class="w-full bg-black/40 border border-white/10 text-white px-6 py-4 rounded-2xl outline-none focus:border-[#A2F625] transition font-medium"
+                            placeholder="john@example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Subject</label>
+                        <select auto-complete="off" name="subject"
+                            class="w-full bg-black/40 border border-white/10 text-white px-6 py-4 rounded-2xl outline-none focus:border-[#A2F625] transition font-medium">
+                            <option value="general" class="bg-[#111827]">General Inquiry</option>
+                            <option value="withdrawal" class="bg-[#111827]">Withdrawal Issue</option>
+                            <option value="fraud" class="bg-[#111827]">Report Fraud</option>
+                            <option value="partnership" class="bg-[#111827]">Partnership</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-400 mb-2">Message</label>
+                        <textarea name="message" rows="4" required
+                            class="w-full bg-black/40 border border-white/10 text-white px-6 py-4 rounded-2xl outline-none focus:border-[#A2F625] transition font-medium"
+                            placeholder="How can we help you?"></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-[#A2F625] text-black font-black py-4 px-6 rounded-2xl hover:bg-[#8CD81B] transition-all transform hover:scale-[1.02] shadow-[0_0_20px_rgba(162,246,37,0.3)]">
+                        Send Message
+                    </button>
+                    <p class="text-xs text-gray-500 text-center mt-4">We usually respond within 24 hours.</p>
+                </form>
+            </div>
+
+            <!-- Side Info -->
+            <div class="space-y-6">
+                <!-- Support Email Card -->
+                <div
+                    class="bg-gradient-to-br from-[#111827] to-[#0A0D14] border border-gray-800 rounded-3xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#A2F625]/5 rounded-full blur-2xl -mr-10 -mt-10">
+                    </div>
+                    <div
+                        class="w-12 h-12 bg-[#A2F625]/10 rounded-xl flex items-center justify-center mb-6 relative z-10">
+                        <svg class="w-6 h-6 text-[#A2F625]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 relative z-10">Direct Email</h3>
+                    <p class="text-gray-400 mb-4 relative z-10">For urgent matters or direct business proposals.</p>
+                    <a href="mailto:support@raffle-system.com"
+                        class="text-[#A2F625] font-semibold hover:underline relative z-10">support@raffle-system.com</a>
+                </div>
+
+                <!-- Office Card -->
+                <div
+                    class="bg-gradient-to-br from-[#111827] to-[#0A0D14] border border-gray-800 rounded-3xl p-8 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl -ml-10 -mt-10">
+                    </div>
+                    <div
+                        class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-6 relative z-10">
+                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 relative z-10">Corporate Office</h3>
+                    <p class="text-gray-400 relative z-10">
+                        Block A, Tech Hub Plaza<br>
+                        Lagos, Nigeria
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

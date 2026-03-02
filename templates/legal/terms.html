@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Terms and Conditions - Raffle System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#0A0D14] pt-24 pb-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-[#111827] border border-gray-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-[#A2F625]/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+
+            <h1 class="text-3xl md:text-5xl font-black text-white mb-6 tracking-tighter relative z-10">Terms & <span
+                    class="text-[#A2F625]">Conditions</span></h1>
+            <p class="text-gray-400 mb-10 text-sm md:text-base border-b border-gray-800 pb-6 relative z-10">
+                Last Updated: {% now "F j, Y" %}
+            </p>
+
+            <div class="space-y-8 text-gray-300 font-light leading-relaxed relative z-10">
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">1. Acceptance of Terms</h2>
+                    <p>By accessing or using the Raffle System platform, you agree to be bound by these Terms and
+                        Conditions. If you do not agree to these terms, please refrain from using our services.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">2. Ticket Purchases & Refunds</h2>
+                    <div class="bg-red-500/10 border-l-4 border-red-500 p-4 rounded-r-lg mb-3">
+                        <p class="text-red-400 font-semibold mb-0">All ticket purchases are final and non-refundable.
+                        </p>
+                    </div>
+                    <p>Once a ticket is purchased, the transaction cannot be reversed, canceled, or refunded under any
+                        circumstances, even if you change your mind or fail to win. Please participate responsibly.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">3. Winner Selection & Fairness</h2>
+                    <div class="bg-[#A2F625]/10 border-l-4 border-[#A2F625] p-4 rounded-r-lg mb-3">
+                        <p class="text-[#A2F625] font-semibold mb-0">Provably Fair Algorithm</p>
+                    </div>
+                    <p>Winner selection is managed exclusively by a provably fair, automated algorithmic process.
+                        <strong>There is absolutely zero human intervention</strong> in determining the winner of any
+                        respective raffle. The system guarantees equal probability for all active tickets in a given
+                        campaign.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">4. Organizer Responsibilities</h2>
+                    <p>Users who create and host raffles ("Organizers") are responsible for ensuring their campaigns
+                        comply with local laws and regulations. The platform serves solely as an escrow and distribution
+                        mechanism. Organizers must accurately describe their campaigns and adhere to the scheduled end
+                        times.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">5. Withdrawal Processing</h2>
+                    <ul class="list-disc pl-5 space-y-2 mt-2">
+                        <li>Withdrawal requests are processed exclusively on <strong>business days only (Monday -
+                                Friday)</strong>.</li>
+                        <li><strong>No withdrawals are processed on weekends (Saturday, Sunday) or public
+                                holidays.</strong></li>
+                        <li>A standard processing fee is deducted from all approved withdrawals.</li>
+                        <li>Users are permitted only one pending withdrawal request at any given time to maintain system
+                            security.</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">6. Account Termination</h2>
+                    <p>We reserve the right to suspend or terminate accounts that engage in fraudulent activities, money
+                        laundering attempts, or violations of these Terms and Conditions. Any associated funds in
+                        terminated accounts may be subject to platform retention pending investigation.</p>
+                </section>
+
+                <section>
+                    <h2 class="text-xl font-bold text-white mb-3">7. Limitation of Liability</h2>
+                    <p>The Raffle System and its operators shall not be held liable for any indirect, incidental,
+                        special, consequential or punitive damages resulting from your access to or use of, or inability
+                        to access or use the platform.</p>
+                </section>
+
+            </div>
+
+            <div class="mt-12 pt-8 border-t border-gray-800 text-center">
+                <p class="text-gray-500 text-sm">If you have any questions regarding these terms, please <a
+                        href="mailto:support@raffle-system.com" class="text-[#A2F625] hover:underline">contact our
+                        support team</a>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

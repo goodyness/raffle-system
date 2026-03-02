@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}System Audit Log | Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8 px-4 mt-20">
+    <div class="mb-10">
+        <h1 class="text-4xl font-black italic uppercase tracking-tighter text-white">System Audit Log</h1>
+        <p class="text-gray-500 text-sm mt-1">Trace all administrative actions and security events.</p>
+    </div>
+
+    <div class="bg-[#0F172A] border border-white/5 rounded-[3rem] overflow-hidden shadow-xl">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr
+                    class="text-gray-500 border-b border-white/5 text-[10px] uppercase font-black tracking-widest bg-white/[0.02]">
+                    <th class="px-8 py-6">Timestamp</th>
+                    <th class="px-8 py-6">Admin / Actor</th>
+                    <th class="px-8 py-6">Action Event</th>
+                    <th class="px-8 py-6">Description</th>
+                    <th class="px-8 py-6">IP Address</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5 font-mono text-[11px]">
+                {% for log in logs %}
+                <tr class="group hover:bg-white/[0.01] transition">
+                    <td class="px-8 py-6 text-gray-400 whitespace-nowrap">
+                        {{ log.created_at|date:"Y-m-d H:i:s" }}
+                    </td>
+                    <td class="px-8 py-6 whitespace-nowrap">
+                        {% if log.user %}
+                        <span class="text-[#A2F625] font-bold">{{ log.user.email }}</span>
+                        {% else %}
+                        <span class="text-gray-600 italic">SYSTEM</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-8 py-6 whitespace-nowrap">
+                        <span class="px-2 py-1 rounded bg-white/5 text-white/80 border border-white/5">
+                            {{ log.action }}
+                        </span>
+                    </td>
+                    <td
+                        class="px-8 py-6 text-gray-500 max-w-md truncate group-hover:whitespace-normal transition-all duration-300">
+                        {{ log.description }}
+                    </td>
+                    <td class="px-8 py-6 text-gray-600">
+                        {{ log.ip_address|default:"-" }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5"
+                        class="px-8 py-20 text-center text-gray-600 italic uppercase font-black tracking-widest text-xs">
+                        No audit logs recorded yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        {% if logs.has_other_pages %}
+        <div class="px-8 py-6 bg-white/[0.02] border-t border-white/5 flex items-center justify-center gap-4">
+            {% if logs.has_previous %}
+            <a href="?page={{ logs.previous_page_number }}"
+                class="text-gray-500 hover:text-white text-xs font-black uppercase transition">Prev</a>
+            {% endif %}
+
+            <span class="text-[#A2F625] font-black text-xs">{{ logs.number }} / {{ logs.paginator.num_pages }}</span>
+
+            {% if logs.has_next %}
+            <a href="?page={{ logs.next_page_number }}"
+                class="text-gray-500 hover:text-white text-xs font-black uppercase transition">Next</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

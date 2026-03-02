@@ -1,0 +1,82 @@
+<nav class="fixed top-0 left-0 right-0 z-[100] bg-[#0F172A]/80 border-b border-white/5 backdrop-blur-xl nav-transition">
+    <div class="max-w-7xl mx-auto px-6 lg:px-12">
+        <div class="flex items-center justify-between h-24">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <a href="/"
+                    class="text-3xl font-black italic uppercase tracking-tighter text-[#A2F625] flex items-center gap-2 group">
+                    <span
+                        class="bg-[#A2F625] text-black px-2 py-0.5 rounded-lg group-hover:bg-white transition">R</span>
+                    <span class="text-white group-hover:text-[#A2F625] transition invisible sm:visible">AFFLE</span>
+                </a>
+            </div>
+
+            <!-- Nav Links -->
+            <div class="flex items-center gap-8">
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="/"
+                        class="text-xs font-black uppercase text-gray-500 hover:text-white transition tracking-widest">Explore</a>
+
+                    {% if user.is_authenticated %}
+                    {% if user.role == 'organizer' %}
+                    <a href="{% url 'raffle:registrar_raffle_dashboard' %}"
+                        class="text-xs font-black uppercase text-[#A2F625] hover:text-white transition tracking-widest flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-[#A2F625] rounded-full animate-pulse"></span>
+                        Dashboard
+                    </a>
+                    {% elif user.role == 'admin' %}
+                    <a href="{% url 'accounts:admin_dashboard' %}"
+                        class="text-xs font-black uppercase text-blue-400 hover:text-white transition tracking-widest flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
+                        Admin Panel
+                    </a>
+                    {% else %}
+                    <a href="{% url 'raffle:participant_dashboard' %}"
+                        class="text-xs font-black uppercase text-[#A2F625] hover:text-white transition tracking-widest flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-[#A2F625] rounded-full animate-pulse"></span>
+                        My Dashboard
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center gap-4">
+                    {% if user.is_authenticated %}
+                    <div class="flex items-center gap-4">
+                        <span class="hidden sm:inline text-[10px] font-black text-gray-600 uppercase tracking-widest">{{  user.email|truncatechars:20 }}</span>
+                        <a href="{% url 'accounts:profile_settings' %}"
+                            class="text-xs font-black uppercase text-gray-400 hover:text-white transition tracking-widest">
+                            Settings
+                        </a>
+                        <a href="{% url 'accounts:logout' %}"
+                            class="text-xs font-black uppercase bg-white/5 text-gray-400 px-6 py-3 rounded-xl border border-white/10 hover:bg-white hover:text-black transition">
+                            Logout
+                        </a>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}"
+                        class="text-xs font-black uppercase text-white px-4 py-3 hover:text-[#A2F625] transition tracking-widest">
+                        Login
+                    </a>
+                    <div class="relative group">
+                        <button
+                            class="bg-[#A2F625] text-black text-xs font-black uppercase px-8 py-3.5 rounded-xl border border-[#A2F625] hover:bg-white hover:border-white transition shadow-lg shadow-[#A2F625]/20">
+                            Create Raffle
+                        </button>
+                        <!-- Dropdown -->
+                        <div
+                            class="absolute right-0 top-full mt-2 w-56 bg-[#0F172A] border border-white/10 rounded-2xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-[110] overflow-hidden">
+                            <a href="{% url 'accounts:register_organizer' %}"
+                                class="block px-6 py-4 text-xs font-black text-white hover:bg-[#A2F625] hover:text-black transition uppercase tracking-widest">As
+                                Organizer</a>
+                            <a href="{% url 'accounts:register_participant' %}"
+                                class="block px-6 py-4 text-xs font-black text-white hover:bg-white/5 transition border-t border-white/5 uppercase tracking-widest">As
+                                Participant</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

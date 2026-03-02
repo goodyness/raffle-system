@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LIVE DRAW: {{ raffle.title }} | Raffle System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#0A0F12] flex flex-col items-center justify-center py-20 px-4 relative overflow-hidden">
+
+    <!-- BACKGROUND DECOR -->
+    <div class="absolute inset-0 z-0">
+        <div
+            class="absolute top-1/4 left-1/4 w-96 h-96 bg-[#A2F625] rounded-full mix-blend-multiply filter blur-[128px] opacity-10 animate-pulse">
+        </div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-10 animate-pulse"
+            style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="relative z-10 w-full max-w-4xl text-center">
+        <div class="mb-12 animate-fade-in-down">
+            <span
+                class="px-4 py-1.5 rounded-full bg-[#A2F625]/10 text-[#A2F625] text-[10px] font-black uppercase tracking-[0.3em] border border-[#A2F625]/20">The
+                Grand Reveal</span>
+            <h1 class="text-5xl md:text-7xl font-black italic uppercase tracking-tighter text-white mt-6 mb-4">{{ raffle.title }}</h1>
+            <p class="text-gray-500 font-bold uppercase tracking-widest text-sm">Selecting {{ raffle.num_winners }} Lucky Winner(s)</p>
+        </div>
+
+        <!-- SLOT MACHINE DISPLAY -->
+        <div class="relative group">
+            <div
+                class="absolute -inset-1 bg-gradient-to-r from-[#A2F625] to-blue-500 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000">
+            </div>
+            <div
+                class="relative bg-[#0F172A] border border-white/10 rounded-[3rem] p-8 md:p-16 shadow-2xl overflow-hidden min-h-[400px] flex flex-col items-center justify-center">
+
+                <!-- STANDBY / START SCREEN -->
+                <div id="start-screen" class="space-y-8">
+                    <div
+                        class="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#A2F625]" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <p class="text-white text-xl font-bold italic">Are you ready for the results?</p>
+                    <button id="initiate-draw"
+                        class="bg-[#A2F625] text-black font-black uppercase tracking-tighter text-lg px-12 py-5 rounded-2xl hover:bg-white hover:scale-105 transition-all transform active:scale-95 shadow-2xl shadow-[#A2F625]/20">
+                        Initiate Draw →
+                    </button>
+                </div>
+
+                <!-- ROLL ANIMATION -->
+                <div id="draw-animation" class="hidden w-full">
+                    <div id="slots-container" class="relative h-20 overflow-hidden mb-8">
+                        <div id="slots-inner" class="absolute top-0 left-0 w-full transition-all duration-75">
+                            <!-- Names will be injected here -->
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-[#A2F625] w-0 transition-all duration-5000 linear">
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] mt-6 animate-pulse">
+                        Scanning the Blockchain of Faith...</p>
+                </div>
+
+                <!-- WINNER REVEAL -->
+                <div id="winner-reveal" class="hidden space-y-8">
+                    <div class="relative">
+                        <div class="confetti-container absolute inset-0 pointer-events-none"></div>
+                        <h2 class="text-[#A2F625] text-2xl font-black uppercase tracking-widest italic animate-bounce">
+                            Congratulations!</h2>
+                        <div id="winners-list" class="space-y-4 mt-8">
+                            <!-- Winners dynamically populated -->
+                        </div>
+                    </div>
+                    <a href="{% url 'raffle:raffle_detail' raffle.custom_id %}"
+                        class="inline-block text-gray-500 hover:text-white transition text-xs font-black uppercase tracking-widest mt-12 underline">Back
+                        to Raffle Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes slotRoll {
+        0% {
+            transform: translateY(0);
+        }
+
+        100% {
+            transform: translateY(-50%);
+        }
+    }
+
+    .slot-item {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        font-style: italic;
+        color: white;
+    }
+
+    .fade-in-down {
+        animation: fadeInDown 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+{{ all_participants_names|json_script:"participants-data" }}
+{{ winners_data|json_script:"winners-data" }}
+
+<script>
+    const startScreen = document.getElementById('start-screen');
+    const drawAnimation = document.getElementById('draw-animation');
+    const winnerReveal = document.getElementById('winner-reveal');
+    const initiateBtn = document.getElementById('initiate-draw');
+    const slotsInner = document.getElementById('slots-inner');
+    const progressBar = document.getElementById('progress-bar');
+    const winnersList = document.getElementById('winners-list');
+
+    // Safe Data Loading
+    const participants = JSON.parse(document.getElementById('participants-data').textContent);
+    const winners = JSON.parse(document.getElementById('winners-data').textContent);
+
+    initiateBtn.addEventListener('click', () => {
+        startScreen.classList.add('hidden');
+        drawAnimation.classList.remove('hidden');
+
+        // Setup slots
+        let slotContent = '';
+        // Duplicate list for seamless loop
+        const rollList = [...participants, ...participants, ...participants];
+        rollList.forEach(name => {
+            slotContent += `<div class="slot-item">${name}</div>`;
+        });
+        slotsInner.innerHTML = slotContent;
+
+        // Animate
+        let startTime = Date.now();
+        const duration = 5000;
+        progressBar.style.width = '100%';
+
+        const rollInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            if (elapsed >= duration) {
+                clearInterval(rollInterval);
+                finishDraw();
+            } else {
+                const step = (Math.random() * 80);
+                slotsInner.style.transform = `translateY(-${(elapsed % 1000) / 1000 * 80 * participants.length}px)`;
+            }
+        }, 50);
+    });
+
+    function finishDraw() {
+        drawAnimation.classList.add('hidden');
+        winnerReveal.classList.remove('hidden');
+
+        // Populate winners
+        winners.forEach((w, index) => {
+            const row = document.createElement('div');
+            row.className = "bg-white/5 border border-[#A2F625]/20 p-6 rounded-3xl transform scale-0 animate-pop-in";
+            row.style.animationDelay = `${index * 0.5}s`;
+            row.innerHTML = `
+                <p class="text-[10px] text-[#A2F625] font-black uppercase">Grand Winner</p>
+                <h3 class="text-4xl font-black text-white italic">${w.name}</h3>
+                <p class="text-gray-500 text-xs font-bold mt-2 font-mono">Ticket ID: ${w.ticket}</p>
+            `;
+            winnersList.appendChild(row);
+        });
+
+        // Confetti!
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#A2F625', '#ffffff', '#3b82f6']
+        });
+    }
+</script>
+
+<style>
+    .animate-pop-in {
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes popIn {
+        from {
+            opacity: 0;
+            transform: scale(0.5);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>
+{% endblock %}

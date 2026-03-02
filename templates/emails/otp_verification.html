@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Your Account</title>
+    <style>
+        body {
+            font-family: 'Inter', Helvetica, Arial, sans-serif;
+            background-color: #0A0F12;
+            color: #FFFFFF;
+            margin: 0;
+            padding: 0;
+        }
+
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #0A0F12;
+            padding-bottom: 40px;
+            padding-top: 40px;
+        }
+
+        .main {
+            background-color: #0F172A;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-spacing: 0;
+            color: #FFFFFF;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .content {
+            padding: 48px;
+        }
+
+        .header {
+            text-align: center;
+            padding-bottom: 32px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            color: #A2F625;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #FFFFFF;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            margin: 0 0 16px 0;
+            text-align: center;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #94A3B8;
+            margin: 0 0 24px 0;
+            text-align: center;
+        }
+
+        .otp-container {
+            background-color: rgba(162, 246, 37, 0.05);
+            border: 1px dashed rgba(162, 246, 37, 0.3);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .otp-code {
+            font-size: 48px;
+            font-weight: 900;
+            color: #A2F625;
+            letter-spacing: 0.2em;
+            margin: 0;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #475569;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer a {
+            color: #A2F625;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <table class="main">
+            <tr>
+                <td class="content">
+                    <div class="header">
+                        <a href="#" class="logo">RAFFLE<span>SYSTEM</span></a>
+                    </div>
+                    <h1>Verify Your Identity</h1>
+                    <p>Use the code below to complete your registration and unlock your organizer dashboard. This code
+                        expires in 15 minutes.</p>
+
+                    <div class="otp-container">
+                        <div class="otp-code">{{ otp_code }}</div>
+                    </div>
+
+                    <p>If you didn't request this code, you can safely ignore this email.</p>
+
+                    <div class="footer">
+                        &copy; 2026 Raffle System. All rights reserved.<br>
+                        <a href="#">Terms of Service</a> &bull; <a href="#">Privacy Policy</a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>
