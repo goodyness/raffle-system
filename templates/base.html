@@ -135,10 +135,10 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body class="bg-[#0A0F12] text-white transition-colors duration-300 font-['Inter']">
+<body class="flex flex-col min-h-screen bg-[#0A0F12] text-white transition-colors duration-300 font-['Inter']">
     {% include 'partials/top_nav.html' %}
 
-    <main class="min-h-screen pt-24 pb-32 md:pb-12">
+    <main class="flex-grow pt-24 pb-32 md:pb-12">
         {% if messages %}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
             {% for message in messages %}
